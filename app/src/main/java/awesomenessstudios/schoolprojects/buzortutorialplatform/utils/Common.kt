@@ -14,25 +14,27 @@ object Common {
 
     val mAuth = FirebaseAuth.getInstance()
     val fireStoreDB = Firebase.firestore.batch()
+//    val db = Firebase.firestore
+
 
 
     const val LOCATION_PERMISSION_REQUEST_CODE = 1001
 
 
-    private const val PARENTS_REF = "MindSpark Parents"
-    private const val CHILDREN_REF = "MindSpark Children"
-    private const val QUIZ_REF = "MindSpark Quizzes"
-    private const val VIDEOS_REF = "MindSpark Videos"
-    private const val OUTDOOR_TASKS_REF = "MindSpark Outdoor Tasks"
-    private const val SCORES_REF = "MindSpark Scores"
+    private const val TEACHERS_REF = "Buzor Platform Teachers"
+    private const val STUDENTS_REF = "Buzor Platform Students"
+//    private const val QUIZ_REF = "MindSpark Quizzes"
+//    private const val VIDEOS_REF = "MindSpark Videos"
+//    private const val OUTDOOR_TASKS_REF = "MindSpark Outdoor Tasks"
+//    private const val SCORES_REF = "MindSpark Scores"
 
 
-    val parentsCollectionRef = Firebase.firestore.collection(PARENTS_REF)
-    val childrenCollectionRef = Firebase.firestore.collection(CHILDREN_REF)
-    val quizCollectionRef = Firebase.firestore.collection(QUIZ_REF)
-    val videoCollectionRef = Firebase.firestore.collection(VIDEOS_REF)
-    val outdoorTaskCollectionRef = Firebase.firestore.collection(OUTDOOR_TASKS_REF)
-    val scoresCollectionRef = Firebase.firestore.collection(SCORES_REF)
+    val teachersCollectionRef = Firebase.firestore.collection(TEACHERS_REF)
+    val studentsCollectionRef = Firebase.firestore.collection(STUDENTS_REF)
+//    val quizCollectionRef = Firebase.firestore.collection(QUIZ_REF)
+//    val videoCollectionRef = Firebase.firestore.collection(VIDEOS_REF)
+//    val outdoorTaskCollectionRef = Firebase.firestore.collection(OUTDOOR_TASKS_REF)
+//    val scoresCollectionRef = Firebase.firestore.collection(SCORES_REF)
 
 
     fun logout() {

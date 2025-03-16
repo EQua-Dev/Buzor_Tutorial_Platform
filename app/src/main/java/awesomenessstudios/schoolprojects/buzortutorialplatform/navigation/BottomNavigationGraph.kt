@@ -8,46 +8,43 @@ package awesomenessstudios.schoolprojects.buzortutorialplatform.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.courses.presentation.StudentCoursesScreen
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.profile.presentation.StudentProfileScreen
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.sessions.presentation.StudentSessionScreen
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.wallet.presentation.StudentWalletScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.courses.presentation.TeacherCoursesScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.payments.presentation.TeacherPaymentsScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.profile.presentation.TeacherProfileScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.sessions.presentation.TeacherSessionScreen
 
-/*
+
 @Composable
 fun StudentBottomNavigationGraph(navController: NavHostController) {
 
-    NavHost(navController = navController, startDestination = BottomBarScreen.Transactions.route) {
+    NavHost(navController = navController, startDestination = StudentBottomBarScreen.Sessions.route) {
         composable(
-            route = BottomBarScreen.Transactions.route
+            route = StudentBottomBarScreen.Sessions.route
         ) {
-            StudentTransactions(navController = navController)
+            StudentSessionScreen(navController = navController)
         }
         composable(
-            route = BottomBarScreen.PayFees.route
+            route = StudentBottomBarScreen.Courses.route
         ) {
-            StudentPayFees(navController = navController)
+            StudentCoursesScreen(navController = navController)
         }
         composable(
-            route = BottomBarScreen.TakeLoan.route
+            route = StudentBottomBarScreen.Wallet.route
         ) {
-            StudentTakeLoan(navController = navController)
+            StudentWalletScreen(navController = navController)
         }
         composable(
-            route = BottomBarScreen.PayDues.route
+            route = StudentBottomBarScreen.Profile.route
         ) {
-            StudentPayDues(navController = navController)
+            StudentProfileScreen(navController = navController)
         }
-        composable(
-            route = BottomBarScreen.Savings.route
-        ) {
-            StudentSavings(navController = navController)
-        }
-        composable(
+        /*composable(
             Screen.FeesSemester.route,
             arguments = listOf(
                 navArgument(name = "level") { type = NavType.StringType },
@@ -79,10 +76,10 @@ fun StudentBottomNavigationGraph(navController: NavHostController) {
                 //onBackRequested = onBackRequested,
 
             )
-        }
+        }*/
     }
 
-}*/
+}
 
 @Composable
 fun TeacherBottomNavigationGraph(navController: NavHostController) {

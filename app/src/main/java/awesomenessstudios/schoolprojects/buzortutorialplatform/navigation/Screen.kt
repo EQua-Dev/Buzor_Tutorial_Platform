@@ -13,9 +13,18 @@ sealed class Screen(
         route = "splash",
     )
 
-    object Signup : Screen(
-        route = "signup",
-        title = R.string.signup,
+    object InitRoleTypeScreen : Screen(
+        route = "role_type",
+    )
+
+    object StudentRegistration : Screen(
+        route = "student_registration",
+        title = R.string.student_registration,
+    )
+
+    object TeacherRegistration : Screen(
+        route = "teacher_registration",
+        title = R.string.teacher_registration,
     )
 
     object Login : Screen(
@@ -24,13 +33,17 @@ sealed class Screen(
     )
 
     object ForgotPassword : Screen(
-        route = "forgotpassword",
+        route = "forgot_password",
         title = R.string.forgot_password,
     )
 
     object TeacherHome : Screen(
-        route = "teacherhome",
+        route = "teacher_home",
         title = R.string.teacher_home,
+    )
+    object StudentHome : Screen(
+        route = "student_home",
+        title = R.string.student_home,
     )
     /*
         object ChildHome : Screen(

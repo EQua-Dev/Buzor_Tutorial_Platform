@@ -1,6 +1,5 @@
 package awesomenessstudios.schoolprojects.buzortutorialplatform.holder
 
-import android.util.Log
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateDp
@@ -23,17 +22,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.navArgument
+import awesomenessstudios.schoolprojects.buzortutorialplatform.data.enums.UserRole
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.StudentHomeScreen
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.auth.presentation.signup.StudentRegistrationScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.TeacherHomeScreen
-import com.awesomenessstudios.schoolprojects.criticalthinkingappforkids.holder.HolderViewModel
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.auth.presentation.forgotpassword.ForgotPasswordScreen
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.auth.presentation.login.LoginScreen
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.auth.presentation.signup.TeacherRegistrationScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.navigation.Screen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Common.mAuth
-import com.awesomenessstudios.schoolprojects.criticalthinkingappforkids.providers.LocalNavHost
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.getDp
+import com.awesomenessstudios.schoolprojects.criticalthinkingappforkids.providers.LocalNavHost
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -167,38 +169,65 @@ fun ScaffoldSection(
             NavHost(
                 modifier = Modifier.weight(1f),
                 navController = controller,
-                startDestination = Screen.TeacherHome.route
+                startDestination = Screen.InitRoleTypeScreen.route
             ) {
-                /*composable(Screen.Login.route) {
+                composable(Screen.InitRoleTypeScreen.route) {
                     onStatusBarColorChange(MaterialTheme.colorScheme.background)
-                    LoginScreen(
-                        onNavigationRequested = onNavigationRequested,
-                        onAuthenticated = onAuthenticated
+                    InitScreen(
+                        onRoleSelected = { _ ->
+                            controller.navigate(Screen.Login.route)
+                        },
                     )
                 }
-                composable(Screen.Signup.route) {
+                composable(Screen.TeacherRegistration.route) {
                     onStatusBarColorChange(MaterialTheme.colorScheme.background)
-                    SignUpScreen(
-                        onNavigationRequested = onNavigationRequested,
-                        onAccountCreated = onAccountCreated,
+                    TeacherRegistrationScreen(
+                        onRegistrationSuccess = { controller.navigate(Screen.Login.route) },
                     )
                 }
                 composable(Screen.Login.route) {
                     onStatusBarColorChange(MaterialTheme.colorScheme.background)
                     LoginScreen(
-                        onNavigationRequested = onNavigationRequested,
-                        onAuthenticated = onAuthenticated
+                        onLoginSuccess = { userRole ->
+                            if (userRole === UserRole.TEACHER.name) {
+                                controller.navigate(Screen.TeacherHome.route)
+                            } else {
+                                controller.navigate(Screen.StudentHome.route)
+                            }
+                        },
+                        onForgotPasswordClicked = { controller.navigate(Screen.ForgotPassword.route) },
+                        onRegisterClicked = {
+                                userRole ->
+                            if (userRole === UserRole.TEACHER.name) {
+                                controller.navigate(Screen.TeacherRegistration.route)
+                            } else {
+                                controller.navigate(Screen.StudentRegistration.route)
+                            }
+                        }
                     )
                 }
                 composable(Screen.ForgotPassword.route) {
                     onStatusBarColorChange(MaterialTheme.colorScheme.background)
                     ForgotPasswordScreen(
-                        onNavigationRequested = onNavigationRequested
+                        onPasswordResetSuccess = { controller.navigate(Screen.Login.route) }
                     )
-                }*/
+                }
                 composable(Screen.TeacherHome.route) {
                     onStatusBarColorChange(MaterialTheme.colorScheme.background)
                     TeacherHomeScreen(
+                        baseNavHostController = controller,
+                        onNavigationRequested = onNavigationRequested,
+                    )
+                }
+                composable(Screen.StudentRegistration.route) {
+                    onStatusBarColorChange(MaterialTheme.colorScheme.background)
+                    StudentRegistrationScreen(
+                        onRegistrationSuccess = { controller.navigate(Screen.Login.route) },
+                    )
+                }
+                composable(Screen.StudentHome.route) {
+                    onStatusBarColorChange(MaterialTheme.colorScheme.background)
+                    StudentHomeScreen(
                         baseNavHostController = controller,
                         onNavigationRequested = onNavigationRequested,
                     )

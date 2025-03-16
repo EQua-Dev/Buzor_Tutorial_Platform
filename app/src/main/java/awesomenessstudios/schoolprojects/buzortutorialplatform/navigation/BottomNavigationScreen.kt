@@ -35,11 +35,11 @@ sealed class StudentBottomBarScreen(
     val icon: ImageVector,
     val route: String
 ){
-    object Transactions : StudentBottomBarScreen("Transaction", Icons.Default.History, "student_transactions",)
-    object PayFees : StudentBottomBarScreen("Pay Fees", Icons.Default.Payments, "student_pay_fees",)
-    object TakeLoan : StudentBottomBarScreen("Take Loan", Icons.Default.VolunteerActivism, "student_take_loan",)
-    object PayDues : StudentBottomBarScreen("Pay Dues", Icons.Default.Gavel, "student_pay_dues",)
-    object Savings : StudentBottomBarScreen("Savings", Icons.Default.Savings, "student_savings",)
+    object Sessions : StudentBottomBarScreen("Sessions", Icons.Default.VideoCall, "student_sessions",)
+    object Courses : StudentBottomBarScreen("Courses", Icons.Default.Payments, "student_courses",)
+    object Wallet : StudentBottomBarScreen("Wallet", Icons.Default.VolunteerActivism, "student_wallet",)
+    object Profile : StudentBottomBarScreen("Profile", Icons.Default.Gavel, "student_profile",)
+
 
 }
 
@@ -48,9 +48,9 @@ sealed class TeacherBottomBarScreen(
     val icon: ImageVector,
     val route: String
 ){
-    object Sessions : TeacherBottomBarScreen("Accounts", Icons.Default.VideoCall, "teacher_sessions",)
-    object Courses : TeacherBottomBarScreen("Fees", Icons.Default.MenuBook, "teacher_courses",)
-    object Payments : TeacherBottomBarScreen("Loans", Icons.Default.Payments, "teacher_payments",)
-    object Profile : TeacherBottomBarScreen("Dues", Icons.Default.Person, "teacher_profile",)
+    object Sessions : TeacherBottomBarScreen("Sessions", Icons.Default.VideoCall, "teacher_sessions",)
+    object Courses : TeacherBottomBarScreen("Courses", Icons.Default.MenuBook, "teacher_courses",)
+    object Payments : TeacherBottomBarScreen("Payments", Icons.Default.Payments, "teacher_payments",)
+    object Profile : TeacherBottomBarScreen("Profile", Icons.Default.Person, "teacher_profile",)
 
 }

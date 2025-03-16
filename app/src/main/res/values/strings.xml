@@ -4,4 +4,7 @@
     <string name="login">Log In</string>
     <string name="forgot_password">Forgot Password</string>
     <string name="teacher_home">Teacher Home</string>
+    <string name="teacher_registration">Teacher Registration</string>
+    <string name="student_registration">Student Registration</string>
+    <string name="student_home">Student Home</string>
 </resources>
