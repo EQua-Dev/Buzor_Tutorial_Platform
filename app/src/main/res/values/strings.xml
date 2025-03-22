@@ -7,4 +7,17 @@
     <string name="teacher_registration">Teacher Registration</string>
     <string name="student_registration">Student Registration</string>
     <string name="student_home">Student Home</string>
+    <string name="create_wallet">Create Wallet</string>
+    <string name="subjects_label">Subjects</string>
+    <string name="subjects_hint">Select subjects of specialisation</string>
+    <string name="wallet_address_complexity_label">Wallet Address Complexity</string>
+    <string name="wallet_address_complexity_hint">Long, Average, Short</string>
+    <string name="securtiy_question_one_label">Security Question 1</string>
+    <string name="securtiy_question_one_hint">Select Question</string>
+    <string name="securtiy_question_two_label">Security Question Two</string>
+    <string name="course_subject_label">Course Subject</string>
+    <string name="course_subject_hint">Select subject for course</string>
+    <string name="course_grades_label">Target Grades</string>
+    <string name="course_grades_hint">Select the target Grades</string>
+    <string name="create_create">Create Course</string>
 </resources>

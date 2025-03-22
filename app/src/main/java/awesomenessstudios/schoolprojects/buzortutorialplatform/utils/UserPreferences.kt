@@ -15,6 +15,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 class UserPreferences(private val context: Context) {
     companion object {
         val ROLE_KEY = stringPreferencesKey("user_role")
+        val USER_ID = stringPreferencesKey("user_id")
     }
 
     // Save the selected role
@@ -30,5 +31,18 @@ class UserPreferences(private val context: Context) {
             preferences[ROLE_KEY]?.let { roleName ->
                 UserRole.valueOf(roleName) // Convert the stored String back to UserRole
             } ?: UserRole.UNKNOWN // Default to UNKNOWN if no role is stored
+        }
+
+    // Save the selected role
+    suspend fun saveUserId(userId: String) {
+        context.dataStore.edit { preferences ->
+            preferences[USER_ID] = userId // Store the enum name as a String
+        }
+    }
+
+    // Retrieve the selected role
+    val loggedInUserId: Flow<String> = context.dataStore.data
+        .map { preferences ->
+            preferences[USER_ID] ?: "" // Default to UNKNOWN if no role is stored
         }
 }

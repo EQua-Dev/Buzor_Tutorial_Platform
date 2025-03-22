@@ -1,26 +1,32 @@
 package awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.auth.presentation.signup
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.Teacher
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Common.mAuth
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Common.teachersCollectionRef
+import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.UserPreferences
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
-class TeacherRegistrationViewModel @Inject constructor() : ViewModel() {
+class TeacherRegistrationViewModel @Inject constructor(private val userPreferences: UserPreferences) :
+    ViewModel() {
     private val _state = mutableStateOf(TeacherRegistrationState())
     val state: State<TeacherRegistrationState> = _state
 
     private var verificationId: String? = null // Store the verification ID from Firebase
+    private var teacherId: String? = null // Store the verification ID from Firebase
 
 
     fun onEvent(event: TeacherRegistrationEvent) {
@@ -63,6 +69,10 @@ class TeacherRegistrationViewModel @Inject constructor() : ViewModel() {
                 _state.value = _state.value.copy(otp = event.otp)
             }
 
+            is TeacherRegistrationEvent.OtpSent -> {
+                _state.value = _state.value.copy(sentOtp = event.otp)
+            }
+
             TeacherRegistrationEvent.VerifyOtp -> {
                 verifyOtp()
             }
@@ -79,6 +89,8 @@ class TeacherRegistrationViewModel @Inject constructor() : ViewModel() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val userId = mAuth.currentUser?.uid ?: ""
+                    teacherId = userId
+                    _state.value = _state.value.copy(newUserId = userId)
                     saveTeacherDetails(userId, activity)
                 } else {
                     _state.value = _state.value.copy(
@@ -107,7 +119,7 @@ class TeacherRegistrationViewModel @Inject constructor() : ViewModel() {
                     isLoading = false,
 //                    isRegistrationSuccessful = true
                 )
-                sendOtp(teacher.phoneNumber, activity)
+                sendOtp(teacher.phoneNumber, activity, userId)
             }
             .addOnFailureListener { e ->
                 _state.value = _state.value.copy(
@@ -118,7 +130,7 @@ class TeacherRegistrationViewModel @Inject constructor() : ViewModel() {
     }
 
 
-    private fun sendOtp(phoneNumber: String, activity: Activity) {
+    private fun sendOtp(phoneNumber: String, activity: Activity, userId: String) {
         val options = PhoneAuthOptions.newBuilder(mAuth)
             .setPhoneNumber(phoneNumber)
             .setTimeout(60L, TimeUnit.SECONDS)
@@ -127,6 +139,11 @@ class TeacherRegistrationViewModel @Inject constructor() : ViewModel() {
                 override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                     // Auto-verification (e.g., SMS retriever)
 //                    signInWithPhoneAuthCredential(credential)
+                    val otp = credential.smsCode // Get the OTP from the credential
+                    Log.d("TAG", "onVerificationCompleted: ${credential.smsCode}")
+                    if (otp != null) {
+                        onEvent(TeacherRegistrationEvent.OtpSent(otp)) // Store the sent OTP
+                    }
                 }
 
                 override fun onVerificationFailed(e: FirebaseException) {
@@ -153,15 +170,26 @@ class TeacherRegistrationViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun verifyOtp() {
-        val otp = _state.value.otp
-        if (otp.length != 6) {
+        val enteredOtp = _state.value.otp
+        val sentOtp = _state.value.sentOtp
+        if (enteredOtp.length != 6) {
             _state.value = _state.value.copy(errorMessage = "Invalid OTP")
             return
         }
 
         _state.value = _state.value.copy(isLoading = true, errorMessage = null)
 
-        val credential = PhoneAuthProvider.getCredential(verificationId!!, otp)
+        /*  if (enteredOtp == sentOtp) {
+              // OTP verification successful
+              updateVerificationStatus()
+          } else {
+              // OTP verification failed
+              _state.value = _state.value.copy(
+                  isLoading = false,
+                  errorMessage = "Incorrect OTP"
+              )
+          }*/
+        val credential = PhoneAuthProvider.getCredential(verificationId!!, enteredOtp)
         mAuth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -176,7 +204,10 @@ class TeacherRegistrationViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun updateVerificationStatus() {
-        val userId = mAuth.currentUser?.uid ?: return
+        val userId = _state.value.newUserId
+        viewModelScope.launch {
+            userPreferences.saveUserId(userId)
+        }
 
         teachersCollectionRef.document(userId)
             .update("isVerified", true)

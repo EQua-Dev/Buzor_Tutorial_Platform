@@ -1,13 +1,13 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id ("com.google.gms.google-services")
-    id ("androidx.navigation.safeargs.kotlin")
-    id ("kotlin-parcelize")
-    id ("kotlin-android")
+    id("com.google.gms.google-services")
+    id("androidx.navigation.safeargs.kotlin")
+    id("kotlin-parcelize")
+    id("kotlin-android")
     kotlin("kapt")
-    id ("kotlin-kapt")
-    id ("com.google.dagger.hilt.android")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -28,8 +28,21 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField(
+                "String",
+                "OPEN_AI_KEY",
+                "\"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\""
+            )
+        }
         release {
             isMinifyEnabled = false
+            buildConfigField(
+                "String",
+                "OPEN_AI_KEY",
+                "\"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\""
+            )
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -45,6 +58,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -68,6 +82,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.play.services.location)
+    implementation(libs.firebase.storage.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -77,15 +92,15 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
 
-    implementation (libs.firebase.bom)
-    implementation (libs.firebase.analytics.ktx)
-    implementation (libs.firebase.auth.ktx)
-    implementation (libs.google.firebase.core)
-    implementation (libs.firebase.firestore.ktx)
-    implementation (libs.firebase.ui.firestore)
+    implementation(libs.firebase.bom)
+    implementation(libs.firebase.analytics.ktx)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.google.firebase.core)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.ui.firestore)
     //implementation (libs.play.services.auth) // Check for the latest version
 
-    implementation (libs.androidx.multidex)
+    implementation(libs.androidx.multidex)
 
     //Dagger - Hilt
     //implementation ("com.google.dagger:hilt-android:2.43.2")
@@ -110,37 +125,43 @@ dependencies {
 
 
     //Kotlin Coroutines
-    implementation (libs.kotlinx.coroutines.play.services)
-    implementation (libs.kotlinx.coroutines.core)
-    implementation (libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
 
     //Navigation Component
-    implementation (libs.androidx.navigation.fragment.ktx)
-    implementation (libs.androidx.navigation.fragment.ktx)
-    implementation (libs.androidx.navigation.ui.ktx)
-    implementation (libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
 
     //Data Store
-    implementation (libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.preferences)
 
     //Lifecycle
-    implementation (libs.androidx.lifecycle.livedata.ktx)
-    implementation (libs.androidx.lifecycle.viewmodel.ktx)
-    implementation (libs.androidx.lifecycle.extensions)
-    implementation (libs.androidx.lifecycle.runtime.ktx.v284)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.extensions)
+    implementation(libs.androidx.lifecycle.runtime.ktx.v284)
 
     //Lottie Animation
-    implementation (libs.lottie)
-    implementation (libs.lottiedialog)
-    implementation (libs.lottie.compose)
+    implementation(libs.lottie)
+    implementation(libs.lottiedialog)
+    implementation(libs.lottie.compose)
 
-    implementation (libs.androidx.material.icons.extended)
+    implementation(libs.androidx.material.icons.extended)
 
     //run-time permission manager
-    implementation (libs.dexter)
+    implementation(libs.dexter)
 
-    implementation (libs.androidx.foundation)
+    implementation(libs.androidx.foundation)
 
-    implementation (libs.core)
+    implementation(libs.core)
+    implementation(libs.play.services.location.v2101)
+
+    implementation(libs.coil.compose) // Use the latest version
+    implementation(libs.openai.client) // Use the latest version
+    implementation("io.ktor:ktor-client-cio:3.0.3")
+
 
 }

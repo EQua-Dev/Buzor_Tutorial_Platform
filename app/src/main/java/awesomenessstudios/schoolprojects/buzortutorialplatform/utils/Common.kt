@@ -23,6 +23,7 @@ object Common {
 
     private const val TEACHERS_REF = "Buzor Platform Teachers"
     private const val STUDENTS_REF = "Buzor Platform Students"
+    private const val WALLETS_REF = "Buzor Platform Wallets"
 //    private const val QUIZ_REF = "MindSpark Quizzes"
 //    private const val VIDEOS_REF = "MindSpark Videos"
 //    private const val OUTDOOR_TASKS_REF = "MindSpark Outdoor Tasks"
@@ -31,6 +32,7 @@ object Common {
 
     val teachersCollectionRef = Firebase.firestore.collection(TEACHERS_REF)
     val studentsCollectionRef = Firebase.firestore.collection(STUDENTS_REF)
+    val walletsCollectionRef = Firebase.firestore.collection(WALLETS_REF)
 //    val quizCollectionRef = Firebase.firestore.collection(QUIZ_REF)
 //    val videoCollectionRef = Firebase.firestore.collection(VIDEOS_REF)
 //    val outdoorTaskCollectionRef = Firebase.firestore.collection(OUTDOOR_TASKS_REF)

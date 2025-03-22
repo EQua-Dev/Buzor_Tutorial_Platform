@@ -45,6 +45,14 @@ sealed class Screen(
         route = "student_home",
         title = R.string.student_home,
     )
+    object CreateWalletScreen : Screen(
+        route = "create_wallet_screen",
+        title = R.string.create_wallet,
+    )
+    object CreateCourseFlowScreen : Screen(
+        route = "create_course_flow_screen",
+        title = R.string.create_create,
+    )
     /*
         object ChildHome : Screen(
             route = "childhome/{childId}",

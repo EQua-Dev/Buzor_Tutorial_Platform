@@ -26,12 +26,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.enums.UserRole
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.common.presentation.createwallet.CreateWalletScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.StudentHomeScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.auth.presentation.signup.StudentRegistrationScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.TeacherHomeScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.auth.presentation.forgotpassword.ForgotPasswordScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.auth.presentation.login.LoginScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.auth.presentation.signup.TeacherRegistrationScreen
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.courses.createcourse.CreateCourseFlowScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.navigation.Screen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Common.mAuth
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.getDp
@@ -182,7 +184,7 @@ fun ScaffoldSection(
                 composable(Screen.TeacherRegistration.route) {
                     onStatusBarColorChange(MaterialTheme.colorScheme.background)
                     TeacherRegistrationScreen(
-                        onRegistrationSuccess = { controller.navigate(Screen.Login.route) },
+                        onRegistrationSuccess = { controller.navigate(Screen.CreateWalletScreen.route) },
                     )
                 }
                 composable(Screen.Login.route) {
@@ -230,6 +232,18 @@ fun ScaffoldSection(
                     StudentHomeScreen(
                         baseNavHostController = controller,
                         onNavigationRequested = onNavigationRequested,
+                    )
+                }
+                composable(Screen.CreateWalletScreen.route) {
+                    onStatusBarColorChange(MaterialTheme.colorScheme.background)
+                    CreateWalletScreen(
+                        onWalletCreated = { controller.navigate(Screen.CreateCourseFlowScreen.route) }
+                    )
+                }
+                composable(Screen.CreateCourseFlowScreen.route) {
+                    onStatusBarColorChange(MaterialTheme.colorScheme.background)
+                    CreateCourseFlowScreen(
+                        onCourseCreated = { controller.navigate(Screen.TeacherHome.route) }
                     )
                 }
                 /*composable(

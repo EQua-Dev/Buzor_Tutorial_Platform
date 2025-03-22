@@ -1,6 +1,7 @@
 package awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.auth.presentation.signup
 
 import android.app.Activity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,14 +28,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import awesomenessstudios.schoolprojects.buzortutorialplatform.R
+import awesomenessstudios.schoolprojects.buzortutorialplatform.components.AssimOutlinedDropdown
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.auth.presentation.signup.StudentRegistrationEvent
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.auth.presentation.signup.StudentRegistrationViewModel
+import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Constants.subjects
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,8 +118,17 @@ fun TeacherRegistrationScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         // Subjects Dropdown
-        val subjects = listOf("Math", "Science", "History", "English")
-        var expanded by remember { mutableStateOf(false) }
+        AssimOutlinedDropdown(
+            label = stringResource(id = R.string.subjects_label),
+            hint = stringResource(id = R.string.subjects_hint),
+            options = subjects,
+            selectedValue = state.value.subjects.joinToString(", "),
+            onValueSelected = { viewModel.onEvent(TeacherRegistrationEvent.SubjectsChanged(it.toString())) },
+            isCompulsory = true,
+//            error = state.genderError?.let { stringResource(id = it) },
+            isSearchable = true // Enable search functionality
+        )
+       /* var expanded by remember { mutableStateOf(false) }
 
         ExposedDropdownMenuBox(
             expanded = expanded,
@@ -137,15 +151,17 @@ fun TeacherRegistrationScreen(
             ) {
                 subjects.forEach { subject ->
                     DropdownMenuItem(
+                        text = {
+                            Text(text = subject)
+                        },
                         onClick = {
                             viewModel.onEvent(TeacherRegistrationEvent.SubjectsChanged(subject))
-                        }, text = {
-                            Text(text = subject)
-                        }
+                        },
+                        modifier = Modifier.background(color = Color.Red)
                     )
                 }
             }
-        }
+        }*/
 
         Spacer(modifier = Modifier.height(16.dp))
 
