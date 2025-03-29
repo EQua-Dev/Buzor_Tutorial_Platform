@@ -26,7 +26,7 @@ class TeacherRegistrationViewModel @Inject constructor(private val userPreferenc
     val state: State<TeacherRegistrationState> = _state
 
     private var verificationId: String? = null // Store the verification ID from Firebase
-    private var teacherId: String? = null // Store the verification ID from Firebase
+    private var teacherId: String? = null
 
 
     fun onEvent(event: TeacherRegistrationEvent) {

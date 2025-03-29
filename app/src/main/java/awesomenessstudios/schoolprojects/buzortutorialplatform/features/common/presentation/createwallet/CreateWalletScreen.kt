@@ -35,7 +35,7 @@ import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.
 @Composable
 fun CreateWalletScreen(
     viewModel: CreateWalletViewModel = hiltViewModel(),
-    onWalletCreated: () -> Unit
+    onWalletCreated: (userRole: String) -> Unit
 ) {
     val state = viewModel.state.value
 
@@ -234,7 +234,7 @@ fun CreateWalletScreen(
         // Navigate on Success
         LaunchedEffect(state.isWalletCreated) {
             if (state.isWalletCreated) {
-                onWalletCreated()
+                onWalletCreated(state.userRole!!)
             }
         }
     }

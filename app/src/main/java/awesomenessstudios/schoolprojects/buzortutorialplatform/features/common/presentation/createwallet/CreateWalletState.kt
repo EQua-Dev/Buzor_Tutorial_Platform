@@ -9,5 +9,7 @@ data class CreateWalletState(
     val walletAddressComplexity: String = "",
     val isLoading: Boolean = false,
     val isWalletCreated: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val userRole: String? = null
+
 )

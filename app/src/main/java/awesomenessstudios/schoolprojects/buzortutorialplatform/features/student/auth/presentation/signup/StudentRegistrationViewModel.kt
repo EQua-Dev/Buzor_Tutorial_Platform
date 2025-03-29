@@ -4,23 +4,28 @@ import android.app.Activity
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.Student
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Common.mAuth
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Common.studentsCollectionRef
+import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.UserPreferences
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
-class StudentRegistrationViewModel @Inject constructor() : ViewModel() {
+class StudentRegistrationViewModel @Inject constructor(private val userPreferences: UserPreferences) :
+    ViewModel() {
     private val _state = mutableStateOf(StudentRegistrationState())
     val state: State<StudentRegistrationState> = _state
 
     private var verificationId: String? = null // Store the verification ID from Firebase
+    private var studentId: String? = null
 
 
     fun onEvent(event: StudentRegistrationEvent) {
@@ -28,27 +33,35 @@ class StudentRegistrationViewModel @Inject constructor() : ViewModel() {
             is StudentRegistrationEvent.FirstNameChanged -> {
                 _state.value = _state.value.copy(firstName = event.firstName)
             }
+
             is StudentRegistrationEvent.LastNameChanged -> {
                 _state.value = _state.value.copy(lastName = event.lastName)
             }
+
             is StudentRegistrationEvent.EmailChanged -> {
                 _state.value = _state.value.copy(email = event.email)
             }
+
             is StudentRegistrationEvent.PasswordChanged -> {
                 _state.value = _state.value.copy(password = event.password)
             }
+
             is StudentRegistrationEvent.PhoneNumberChanged -> {
                 _state.value = _state.value.copy(phoneNumber = event.phoneNumber)
             }
+
             is StudentRegistrationEvent.GradeChanged -> {
                 _state.value = _state.value.copy(grade = event.grade)
             }
+
             is StudentRegistrationEvent.Register -> {
                 registerStudent(event.activity)
             }
+
             is StudentRegistrationEvent.OtpChanged -> {
                 _state.value = _state.value.copy(otp = event.otp)
             }
+
             StudentRegistrationEvent.VerifyOtp -> {
                 verifyOtp()
             }
@@ -65,6 +78,8 @@ class StudentRegistrationViewModel @Inject constructor() : ViewModel() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val userId = mAuth.currentUser?.uid ?: ""
+                    studentId = userId
+                    _state.value = _state.value.copy(newUserId = userId)
                     saveStudentDetails(userId, activity)
                 } else {
                     _state.value = _state.value.copy(
@@ -93,7 +108,7 @@ class StudentRegistrationViewModel @Inject constructor() : ViewModel() {
                     isLoading = false,
 //                    isRegistrationSuccessful = true
                 )
-                sendOtp(student.phoneNumber, activity)
+                sendOtp(student.phoneNumber, activity, userId)
             }
             .addOnFailureListener { e ->
                 _state.value = _state.value.copy(
@@ -104,7 +119,7 @@ class StudentRegistrationViewModel @Inject constructor() : ViewModel() {
     }
 
 
-    private fun sendOtp(phoneNumber: String, activity: Activity) {
+    private fun sendOtp(phoneNumber: String, activity: Activity, userId: String) {
         val options = PhoneAuthOptions.newBuilder(mAuth)
             .setPhoneNumber(phoneNumber)
             .setTimeout(60L, TimeUnit.SECONDS)
@@ -162,7 +177,10 @@ class StudentRegistrationViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun updateVerificationStatus() {
-        val userId = mAuth.currentUser?.uid ?: return
+        val userId = _state.value.newUserId//mAuth.currentUser?.uid ?: return
+        viewModelScope.launch {
+            userPreferences.saveUserId(userId)
+        }
 
         studentsCollectionRef.document(userId)
             .update("isVerified", true)

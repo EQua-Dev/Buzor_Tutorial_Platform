@@ -8,6 +8,7 @@ data class StudentRegistrationState(
     val password: String = "",
     val grade: String = "",
     val otp: String = "",
+    val newUserId: String = "",
     val isLoading: Boolean = false,
     val isRegistrationSuccessful: Boolean = false,
     val isOtpSent: Boolean = false,

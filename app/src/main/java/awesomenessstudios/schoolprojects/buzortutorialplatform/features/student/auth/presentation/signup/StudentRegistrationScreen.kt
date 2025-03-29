@@ -27,12 +27,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import awesomenessstudios.schoolprojects.buzortutorialplatform.R
+import awesomenessstudios.schoolprojects.buzortutorialplatform.components.AssimOutlinedDropdown
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.auth.presentation.signup.TeacherRegistrationEvent
+import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Constants.subjects
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -114,37 +119,25 @@ fun StudentRegistrationScreen(
 
         // Grade Dropdown
         var expanded by remember { mutableStateOf(false) }
-        val grades = listOf("Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5")
+        val grades = listOf(
+            "Grade 1" to "Grade 1",
+            "Grade 2" to "Grade 2",
+            "Grade 3" to "Grade 3",
+            "Grade 4" to "Grade 4",
+            "Grade 5" to "Grade 5"
+        )
 
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded }
-        ) {
-            OutlinedTextField(
-                value = state.grade,
-                onValueChange = {},
-                label = { Text("Grade") },
-                modifier = Modifier.fillMaxWidth(),
-                readOnly = true,
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                }
-            )
-
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                grades.forEach { grade ->
-                    DropdownMenuItem(
-                        onClick = {
-                            viewModel.onEvent(StudentRegistrationEvent.GradeChanged(grade))
-                            expanded = false
-                        }, text = { Text(text = grade)}
-                    )
-                }
-            }
-        }
+        // Subjects Dropdown
+        AssimOutlinedDropdown(
+            label = stringResource(id = R.string.grade_label),
+            hint = stringResource(id = R.string.grade_hint),
+            options = grades,
+            selectedValue = state.grade,
+            onValueSelected = { viewModel.onEvent(StudentRegistrationEvent.GradeChanged(it.toString())) },
+            isCompulsory = true,
+//            error = state.genderError?.let { stringResource(id = it) },
+            isSearchable = true // Enable search functionality
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 

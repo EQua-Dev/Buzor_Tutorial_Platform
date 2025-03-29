@@ -8,6 +8,7 @@ data class Teacher(
     val phoneNumber: String = "",
     val subjects: List<String> = listOf(),
     val rating: Double = 0.0,
+    val profileImage: String = "",
     val isVerified: Boolean = false
 
 )

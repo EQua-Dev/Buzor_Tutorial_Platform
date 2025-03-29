@@ -41,6 +41,13 @@ class CreateWalletViewModel @Inject constructor(
                     loggedInUser = userId
                 )
             }
+            userPreferences.role.collect { role ->
+                if (role != null) {
+                    _state.value = _state.value.copy(
+                        userRole = role.name
+                    )
+                }
+            }
         }
     }
 

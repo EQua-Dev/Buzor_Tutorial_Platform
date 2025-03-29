@@ -8,5 +8,6 @@ data class Student(
     val phoneNumber: String = "",
     val password: String = "",
     val grade: String = "",
+    val profileImage: String = "",
     val isVerified: Boolean = false
 )

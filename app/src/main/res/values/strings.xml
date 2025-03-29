@@ -20,4 +20,6 @@
     <string name="course_grades_label">Target Grades</string>
     <string name="course_grades_hint">Select the target Grades</string>
     <string name="create_create">Create Course</string>
+    <string name="grade_label">Your grade</string>
+    <string name="grade_hint">Select your school grade</string>
 </resources>

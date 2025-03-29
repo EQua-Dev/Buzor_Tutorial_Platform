@@ -198,8 +198,7 @@ fun ScaffoldSection(
                             }
                         },
                         onForgotPasswordClicked = { controller.navigate(Screen.ForgotPassword.route) },
-                        onRegisterClicked = {
-                                userRole ->
+                        onRegisterClicked = { userRole ->
                             if (userRole === UserRole.TEACHER.name) {
                                 controller.navigate(Screen.TeacherRegistration.route)
                             } else {
@@ -224,7 +223,7 @@ fun ScaffoldSection(
                 composable(Screen.StudentRegistration.route) {
                     onStatusBarColorChange(MaterialTheme.colorScheme.background)
                     StudentRegistrationScreen(
-                        onRegistrationSuccess = { controller.navigate(Screen.Login.route) },
+                        onRegistrationSuccess = { controller.navigate(Screen.CreateWalletScreen.route) },
                     )
                 }
                 composable(Screen.StudentHome.route) {
@@ -237,8 +236,14 @@ fun ScaffoldSection(
                 composable(Screen.CreateWalletScreen.route) {
                     onStatusBarColorChange(MaterialTheme.colorScheme.background)
                     CreateWalletScreen(
-                        onWalletCreated = { controller.navigate(Screen.CreateCourseFlowScreen.route) }
-                    )
+                        onWalletCreated = { userRole ->
+                            if (userRole === UserRole.TEACHER.name) {
+                                controller.navigate(Screen.CreateCourseFlowScreen.route)
+                            } else {
+                                controller.navigate(Screen.StudentHome.route)
+                            }
+
+                        })
                 }
                 composable(Screen.CreateCourseFlowScreen.route) {
                     onStatusBarColorChange(MaterialTheme.colorScheme.background)
