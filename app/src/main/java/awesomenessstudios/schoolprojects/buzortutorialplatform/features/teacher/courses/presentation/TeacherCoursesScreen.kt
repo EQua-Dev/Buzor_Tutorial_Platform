@@ -62,7 +62,7 @@ fun TeacherCoursesScreen(
                     navController.navigate(Screen.CreateCourseFlowScreen.route) // Replace with your actual route
                 }
                 is TeacherCoursesEvent.NavigateToCourse -> {
-                    navController.navigate("course_details/${event.courseId}") // Replace with your actual route
+//                    navController.navigate("course_details/${event.courseId}") // Replace with your actual route
                 }
             }
         }
