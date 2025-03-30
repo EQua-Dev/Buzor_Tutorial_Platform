@@ -14,4 +14,6 @@ object Constants {
         "Grade 4" to "Grade 4",
         "Grade 5" to "Grade 5"
     )
+
+    const val COURSES_REF = "Buzor Courses"
 }

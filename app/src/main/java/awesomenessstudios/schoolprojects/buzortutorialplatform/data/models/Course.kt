@@ -19,6 +19,7 @@ data class Course(
     val courseNoteThreeTitle: String = "",
     val courseNoteThree: String = "",
     val courseNoteThreeFootnote: String = "",
+    val enrolledStudents: Int = 0,
     val isDeleted: Boolean = false,
     val dateCreated: String = ""
 )

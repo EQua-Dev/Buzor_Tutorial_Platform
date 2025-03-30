@@ -14,6 +14,7 @@ import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.profile.presentation.StudentProfileScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.sessions.presentation.StudentSessionScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.wallet.presentation.StudentWalletScreen
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.courses.createcourse.CreateCourseFlowScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.courses.presentation.TeacherCoursesScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.payments.presentation.TeacherPaymentsScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.profile.presentation.TeacherProfileScreen
@@ -23,7 +24,10 @@ import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.
 @Composable
 fun StudentBottomNavigationGraph(navController: NavHostController) {
 
-    NavHost(navController = navController, startDestination = StudentBottomBarScreen.Sessions.route) {
+    NavHost(
+        navController = navController,
+        startDestination = StudentBottomBarScreen.Sessions.route
+    ) {
         composable(
             route = StudentBottomBarScreen.Sessions.route
         ) {
@@ -84,7 +88,10 @@ fun StudentBottomNavigationGraph(navController: NavHostController) {
 @Composable
 fun TeacherBottomNavigationGraph(navController: NavHostController) {
 
-    NavHost(navController = navController, startDestination = TeacherBottomBarScreen.Sessions.route) {
+    NavHost(
+        navController = navController,
+        startDestination = TeacherBottomBarScreen.Sessions.route
+    ) {
         composable(
             route = TeacherBottomBarScreen.Sessions.route
         ) {
@@ -104,6 +111,13 @@ fun TeacherBottomNavigationGraph(navController: NavHostController) {
             route = TeacherBottomBarScreen.Profile.route
         ) {
             TeacherProfileScreen(navController = navController)
+        }
+        composable(
+            route = Screen.CreateCourseFlowScreen.route
+        ) {
+            CreateCourseFlowScreen(onCourseCreated = {
+                navController.popBackStack()
+            })
         }
         /*
         composable(

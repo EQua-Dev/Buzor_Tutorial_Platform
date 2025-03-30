@@ -21,7 +21,6 @@ fun CreateCourseFlowScreen(/*navController: NavController,*/ onCourseCreated: ()
 
     Column(
         modifier = Modifier.fillMaxSize()
-            .verticalScroll(rememberScrollState())
     ) {
         StepIndicator(currentStep = currentStep, totalSteps = 3)
 

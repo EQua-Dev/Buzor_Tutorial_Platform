@@ -1,5 +1,7 @@
 package awesomenessstudios.schoolprojects.buzortutorialplatform.di
 
+import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.coursesrepo.CourseRepository
+import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.coursesrepo.CourseRepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -24,23 +26,23 @@ object FirebaseModule {
     @Provides
     @Singleton
     fun provideFirebaseStorage(): FirebaseStorage = FirebaseStorage.getInstance()
-/*
-    @Provides
-    @Singleton
-    fun provideOfficialsRepository(
-        auth: FirebaseAuth,
-        firestore: FirebaseFirestore,
-        storage: FirebaseStorage
-    ): OfficialsRepository {
-        return OfficialsRepositoryImpl(auth, firestore, storage)
-    }
 
     @Provides
     @Singleton
-    fun provideCitizensRepository(
+    fun provideCourseRepository(
+        auth: FirebaseAuth,
         firestore: FirebaseFirestore,
         storage: FirebaseStorage
-    ): CitizenRepository {
-        return CitizenRepositoryImpl(firestore, storage)
-    }*/
+    ): CourseRepository {
+        return CourseRepositoryImpl(firestore)
+    }
+    /*
+        @Provides
+        @Singleton
+        fun provideCitizensRepository(
+            firestore: FirebaseFirestore,
+            storage: FirebaseStorage
+        ): CitizenRepository {
+            return CitizenRepositoryImpl(firestore, storage)
+        }*/
 }
