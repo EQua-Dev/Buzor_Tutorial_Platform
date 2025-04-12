@@ -2,6 +2,10 @@ package awesomenessstudios.schoolprojects.buzortutorialplatform.di
 
 import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.coursesrepo.CourseRepository
 import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.coursesrepo.CourseRepositoryImpl
+import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.teacherrepo.TeacherRepository
+import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.teacherrepo.TeacherRepositoryImpl
+import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.walletrepo.WalletRepository
+import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.walletrepo.WalletRepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -35,6 +39,25 @@ object FirebaseModule {
         storage: FirebaseStorage
     ): CourseRepository {
         return CourseRepositoryImpl(firestore)
+    }
+    @Provides
+    @Singleton
+    fun provideTeacherRepository(
+        auth: FirebaseAuth,
+        firestore: FirebaseFirestore,
+        storage: FirebaseStorage
+    ): TeacherRepository {
+        return TeacherRepositoryImpl(firestore)
+    }
+
+    @Provides
+    @Singleton
+    fun provideWalletRepository(
+        auth: FirebaseAuth,
+        firestore: FirebaseFirestore,
+        storage: FirebaseStorage
+    ): WalletRepository {
+        return WalletRepositoryImpl(firestore)
     }
     /*
         @Provides

@@ -7,29 +7,38 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import awesomenessstudios.schoolprojects.buzortutorialplatform.navigation.Screen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.navigation.StudentBottomBar
 import awesomenessstudios.schoolprojects.buzortutorialplatform.navigation.StudentBottomNavigationGraph
 import awesomenessstudios.schoolprojects.buzortutorialplatform.navigation.TeacherBottomBar
 import awesomenessstudios.schoolprojects.buzortutorialplatform.navigation.TeacherBottomNavigationGraph
+import coil.compose.AsyncImage
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudentHomeScreen(
     baseNavHostController: NavHostController,
@@ -67,6 +76,32 @@ fun StudentHomeScreen(
         bottomBar = {
             StudentBottomBar(navController = navController)
         },
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text("Hello, Student")
+                },
+                actions = {
+                    Text("Logout", modifier = Modifier.clickable {
+                        navController.navigate(Screen.InitRoleTypeScreen.route)
+//                        onLogout()
+                    })
+                    /* DropdownMenu(
+                         expanded = false*//* State for menu visibility *//*,
+                onDismissRequest = { *//* Close menu *//* }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Settings") },
+                    onClick = { *//* Navigate to settings *//* }
+                )
+                DropdownMenuItem(
+                    text = { Text("Logout") },
+                    onClick = onLogout
+                )
+            }*/
+                }
+            )
+        }
         /*topBar = {
             Box(
                 modifier = Modifier

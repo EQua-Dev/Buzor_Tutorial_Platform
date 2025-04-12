@@ -17,6 +17,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,7 +38,7 @@ fun CreateWalletScreen(
     viewModel: CreateWalletViewModel = hiltViewModel(),
     onWalletCreated: (userRole: String) -> Unit
 ) {
-    val state = viewModel.state.value
+    val state = viewModel.state.collectAsState()
 
     Column(
         modifier = Modifier
@@ -60,47 +61,47 @@ fun CreateWalletScreen(
             label = stringResource(id = R.string.securtiy_question_one_label),
             hint = stringResource(id = R.string.securtiy_question_one_hint),
             options = securityQuestions,
-            selectedValue = state.walletAddressComplexity,
+            selectedValue = state.value.walletAddressComplexity,
             onValueSelected = { viewModel.onEvent(CreateWalletEvent.SecurityQuestion1Changed(it.toString())) },
             isCompulsory = true,
 //            error = state.genderError?.let { stringResource(id = it) },
             isSearchable = false // Enable search functionality
         )
-       /* ExposedDropdownMenuBox(
-            expanded = expanded1,
-            onExpandedChange = { expanded1 = !expanded1 }
-        ) {
-            OutlinedTextField(
-                value = state.securityQuestion1,
-                onValueChange = {},
-                label = { Text("Security Question 1") },
-                modifier = Modifier.fillMaxWidth(),
-                readOnly = true,
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded1)
-                }
-            )
+        /* ExposedDropdownMenuBox(
+             expanded = expanded1,
+             onExpandedChange = { expanded1 = !expanded1 }
+         ) {
+             OutlinedTextField(
+                 value = state.securityQuestion1,
+                 onValueChange = {},
+                 label = { Text("Security Question 1") },
+                 modifier = Modifier.fillMaxWidth(),
+                 readOnly = true,
+                 trailingIcon = {
+                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded1)
+                 }
+             )
 
-            ExposedDropdownMenu(
-                expanded = expanded1,
-                onDismissRequest = { expanded1 = false }
-            ) {
-                securityQuestions.forEach { question ->
-                    DropdownMenuItem(
-                        onClick = {
-                            viewModel.onEvent(CreateWalletEvent.SecurityQuestion1Changed(question))
-                            expanded1 = false
-                        }, text = {Text(text = question)}
-                    )
-                }
-            }
-        }*/
+             ExposedDropdownMenu(
+                 expanded = expanded1,
+                 onDismissRequest = { expanded1 = false }
+             ) {
+                 securityQuestions.forEach { question ->
+                     DropdownMenuItem(
+                         onClick = {
+                             viewModel.onEvent(CreateWalletEvent.SecurityQuestion1Changed(question))
+                             expanded1 = false
+                         }, text = {Text(text = question)}
+                     )
+                 }
+             }
+         }*/
 
         Spacer(modifier = Modifier.height(8.dp))
 
         // Answer to Security Question 1
         OutlinedTextField(
-            value = state.securityAnswer1,
+            value = state.value.securityAnswer1,
             onValueChange = { viewModel.onEvent(CreateWalletEvent.SecurityAnswer1Changed(it)) },
             label = { Text("Answer to Security Question 1") },
             modifier = Modifier.fillMaxWidth()
@@ -115,49 +116,49 @@ fun CreateWalletScreen(
             label = stringResource(id = R.string.securtiy_question_two_label),
             hint = stringResource(id = R.string.securtiy_question_one_hint),
             options = securityQuestions,
-            selectedValue = state.walletAddressComplexity,
+            selectedValue = state.value.walletAddressComplexity,
             onValueSelected = { viewModel.onEvent(CreateWalletEvent.SecurityQuestion2Changed(it.toString())) },
             isCompulsory = true,
 //            error = state.genderError?.let { stringResource(id = it) },
             isSearchable = false // Enable search functionality
         )
 
-       /* ExposedDropdownMenuBox(
-            expanded = expanded2,
-            onExpandedChange = { expanded2 = !expanded2 }
-        ) {
-            OutlinedTextField(
-                value = state.securityQuestion2,
-                onValueChange = {},
-                label = { Text("Security Question 2") },
-                modifier = Modifier.fillMaxWidth(),
-                readOnly = true,
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded2)
-                }
-            )
+        /* ExposedDropdownMenuBox(
+             expanded = expanded2,
+             onExpandedChange = { expanded2 = !expanded2 }
+         ) {
+             OutlinedTextField(
+                 value = state.securityQuestion2,
+                 onValueChange = {},
+                 label = { Text("Security Question 2") },
+                 modifier = Modifier.fillMaxWidth(),
+                 readOnly = true,
+                 trailingIcon = {
+                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded2)
+                 }
+             )
 
-            ExposedDropdownMenu(
-                expanded = expanded2,
-                onDismissRequest = { expanded2 = false }
-            ) {
-                securityQuestions.forEach { question ->
-                    DropdownMenuItem(
-                        onClick = {
-                            viewModel.onEvent(CreateWalletEvent.SecurityQuestion2Changed(question))
-                            expanded2 = false
-                        },
-                        text = {Text(text = question)}
-                    )
-                }
-            }
-        }*/
+             ExposedDropdownMenu(
+                 expanded = expanded2,
+                 onDismissRequest = { expanded2 = false }
+             ) {
+                 securityQuestions.forEach { question ->
+                     DropdownMenuItem(
+                         onClick = {
+                             viewModel.onEvent(CreateWalletEvent.SecurityQuestion2Changed(question))
+                             expanded2 = false
+                         },
+                         text = {Text(text = question)}
+                     )
+                 }
+             }
+         }*/
 
         Spacer(modifier = Modifier.height(8.dp))
 
         // Answer to Security Question 2
         OutlinedTextField(
-            value = state.securityAnswer2,
+            value = state.value.securityAnswer2,
             onValueChange = { viewModel.onEvent(CreateWalletEvent.SecurityAnswer2Changed(it)) },
             label = { Text("Answer to Security Question 2") },
             modifier = Modifier.fillMaxWidth()
@@ -172,45 +173,51 @@ fun CreateWalletScreen(
             label = stringResource(id = R.string.wallet_address_complexity_label),
             hint = stringResource(id = R.string.wallet_address_complexity_hint),
             options = hashAlgorithms,
-            selectedValue = state.walletAddressComplexity,
-            onValueSelected = { viewModel.onEvent(CreateWalletEvent.WalletAddressComplexityChanged(it.toString())) },
+            selectedValue = state.value.walletAddressComplexity,
+            onValueSelected = {
+                viewModel.onEvent(
+                    CreateWalletEvent.WalletAddressComplexityChanged(
+                        it.toString()
+                    )
+                )
+            },
             isCompulsory = true,
 //            error = state.genderError?.let { stringResource(id = it) },
             isSearchable = true // Enable search functionality
         )
-/*
+        /*
 
-        ExposedDropdownMenuBox(
-            expanded = expanded3,
-            onExpandedChange = { expanded3 = !expanded3 }
-        ) {
-            OutlinedTextField(
-                value = state.walletAddressComplexity,
-                onValueChange = {},
-                label = { Text("Wallet Address Complexity") },
-                modifier = Modifier.fillMaxWidth(),
-                readOnly = true,
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded3)
-                }
-            )
-
-            ExposedDropdownMenu(
-                expanded = expanded3,
-                onDismissRequest = { expanded3 = false }
-            ) {
-                hashAlgorithms.forEach { algorithm ->
-                    DropdownMenuItem(
-                        onClick = {
-                            viewModel.onEvent(CreateWalletEvent.WalletAddressComplexityChanged(algorithm))
-                            expanded3 = false
-                        },
-                        text = {Text(text = algorithm)}
+                ExposedDropdownMenuBox(
+                    expanded = expanded3,
+                    onExpandedChange = { expanded3 = !expanded3 }
+                ) {
+                    OutlinedTextField(
+                        value = state.walletAddressComplexity,
+                        onValueChange = {},
+                        label = { Text("Wallet Address Complexity") },
+                        modifier = Modifier.fillMaxWidth(),
+                        readOnly = true,
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded3)
+                        }
                     )
+
+                    ExposedDropdownMenu(
+                        expanded = expanded3,
+                        onDismissRequest = { expanded3 = false }
+                    ) {
+                        hashAlgorithms.forEach { algorithm ->
+                            DropdownMenuItem(
+                                onClick = {
+                                    viewModel.onEvent(CreateWalletEvent.WalletAddressComplexityChanged(algorithm))
+                                    expanded3 = false
+                                },
+                                text = {Text(text = algorithm)}
+                            )
+                        }
+                    }
                 }
-            }
-        }
-*/
+        */
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -223,18 +230,18 @@ fun CreateWalletScreen(
         }
 
         // Loading and Error Handling
-        if (state.isLoading) {
+        if (state.value.isLoading) {
             CircularProgressIndicator()
         }
 
-        state.errorMessage?.let { error ->
+        state.value.errorMessage?.let { error ->
             Text(text = error, color = Color.Red)
         }
 
         // Navigate on Success
-        LaunchedEffect(state.isWalletCreated) {
-            if (state.isWalletCreated) {
-                onWalletCreated(state.userRole!!)
+        LaunchedEffect(state.value.isWalletCreated) {
+            if (state.value.isWalletCreated) {
+                onWalletCreated(state.value.userRole!!)
             }
         }
     }

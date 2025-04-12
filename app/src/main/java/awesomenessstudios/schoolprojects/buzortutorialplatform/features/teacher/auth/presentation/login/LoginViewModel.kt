@@ -1,5 +1,6 @@
 package awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.auth.presentation.login
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,6 +21,7 @@ class LoginViewModel @Inject constructor(private val userPreferences: UserPrefer
     init {
         viewModelScope.launch {
             userPreferences.role.collect { role ->
+                Log.d("LVM", "role: $role")
                 if (role != null) {
                     _state.value = _state.value.copy(
                         userRole = role.name

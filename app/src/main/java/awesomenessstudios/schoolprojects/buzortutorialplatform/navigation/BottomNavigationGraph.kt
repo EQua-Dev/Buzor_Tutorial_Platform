@@ -8,8 +8,11 @@ package awesomenessstudios.schoolprojects.buzortutorialplatform.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.courses.coursedetail.presentation.StudentCourseDetailScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.courses.presentation.StudentCoursesScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.profile.presentation.StudentProfileScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.sessions.presentation.StudentSessionScreen
@@ -47,6 +50,16 @@ fun StudentBottomNavigationGraph(navController: NavHostController) {
             route = StudentBottomBarScreen.Profile.route
         ) {
             StudentProfileScreen(navController = navController)
+        }
+
+        composable(
+            Screen.StudentCourseDetailScreen.route,
+            arguments = listOf(
+                navArgument(name = "courseId") { type = NavType.StringType }
+            ),
+        ) {
+            val courseId = it.arguments?.getString("courseId")
+            StudentCourseDetailScreen(navController = navController, courseId = courseId!!)
         }
         /*composable(
             Screen.FeesSemester.route,

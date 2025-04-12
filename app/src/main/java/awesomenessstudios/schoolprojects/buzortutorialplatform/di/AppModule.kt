@@ -30,14 +30,20 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideLocationUtils(@ApplicationContext context: Context): LocationUtils {
-        return LocationUtils(context)
+    fun provideLocationUtils(
+        @ApplicationContext context: Context,
+        geocoder: Geocoder
+    ): LocationUtils {
+        return LocationUtils(context, geocoder)
     }
 
     @Provides
     @Singleton
     fun provideGeocoder(@ApplicationContext context: Context): Geocoder {
-        return Geocoder(context, Locale.getDefault()) // Initialize Geocoder with the application context
+        return Geocoder(
+            context,
+            Locale.getDefault()
+        ) // Initialize Geocoder with the application context
     }
 
     @Provides

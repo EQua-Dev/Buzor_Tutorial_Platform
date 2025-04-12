@@ -1,28 +1,24 @@
-package com.awesomenessstudios.schoolprojects.criticalthinkingappforkids.utils
+package awesomenessstudios.schoolprojects.buzortutorialplatform.utils
 
-import kotlin.random.Random
-import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
-import android.content.pm.PackageManager
+
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
+import android.os.Build
 import android.util.Log
-import androidx.compose.ui.text.capitalize
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.annotation.RequiresApi
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.single.PermissionListener
 import java.util.Locale
+import androidx.activity.ComponentActivity
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
+import androidx.biometric.BiometricManager.Authenticators.*
+import androidx.fragment.app.FragmentActivity
 
 
 object HelpMe {
@@ -166,5 +162,55 @@ object HelpMe {
             .replace("_", " ")  // Replace spaces with underscores
             .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }        // Capitalize the entire string
     }
+
+
+
+        @RequiresApi(Build.VERSION_CODES.P)
+        fun promptBiometric(
+            activity: FragmentActivity,
+            title: String = "Authentication Required",
+            subtitle: String = "Use your fingerprint or face to authenticate",
+            onSuccess: () -> Unit,
+            onNoHardware: () -> Unit
+        ) {
+            val biometricManager = BiometricManager.from(activity)
+            when (biometricManager.canAuthenticate(BIOMETRIC_WEAK or BIOMETRIC_STRONG)) {
+                BiometricManager.BIOMETRIC_SUCCESS -> {
+                    val executor = ContextCompat.getMainExecutor(activity)
+                    val biometricPrompt = BiometricPrompt(
+                        activity,
+                        executor,
+                        object : BiometricPrompt.AuthenticationCallback() {
+                            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                                super.onAuthenticationSucceeded(result)
+                                onSuccess()
+                            }
+
+                            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                                super.onAuthenticationError(errorCode, errString)
+                            }
+
+                            override fun onAuthenticationFailed() {
+                                super.onAuthenticationFailed()
+                            }
+                        })
+
+                    val promptInfo = BiometricPrompt.PromptInfo.Builder()
+                        .setTitle(title)
+                        .setSubtitle(subtitle)
+                        .setNegativeButtonText("Cancel")
+                        .build()
+
+                    biometricPrompt.authenticate(promptInfo)
+                }
+
+                BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE,
+                BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE,
+                BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
+                    onNoHardware()
+                }
+            }
+        }
+
 
 }

@@ -80,6 +80,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.biometric.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -162,6 +163,11 @@ dependencies {
     implementation(libs.coil.compose) // Use the latest version
     implementation(libs.openai.client) // Use the latest version
     implementation("io.ktor:ktor-client-cio:3.0.3")
+
+    implementation(libs.androidx.biometric)
+    implementation(libs.biometric)
+
+
 
 
 }

@@ -183,7 +183,7 @@ class StudentRegistrationViewModel @Inject constructor(private val userPreferenc
         }
 
         studentsCollectionRef.document(userId)
-            .update("isVerified", true)
+            .update("verified", true)
             .addOnSuccessListener {
                 _state.value = _state.value.copy(
                     isLoading = false,

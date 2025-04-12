@@ -22,4 +22,5 @@
     <string name="create_create">Create Course</string>
     <string name="grade_label">Your grade</string>
     <string name="grade_hint">Select your school grade</string>
+    <string name="student_course_detail_screen">Student Course Detail Screen</string>
 </resources>

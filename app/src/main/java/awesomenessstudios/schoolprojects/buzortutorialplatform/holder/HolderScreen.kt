@@ -240,7 +240,7 @@ fun ScaffoldSection(
                             if (userRole === UserRole.TEACHER.name) {
                                 controller.navigate(Screen.CreateCourseFlowScreen.route)
                             } else {
-                                controller.navigate(Screen.StudentHome.route)
+                                controller.navigate(Screen.Login.route)
                             }
 
                         })

@@ -35,6 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.Course
+import awesomenessstudios.schoolprojects.buzortutorialplatform.navigation.Screen
 import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,7 +82,12 @@ fun StudentCoursesScreen(
                     CoursesList(
                         courses = state.courses,
                         onCourseClick = { courseId ->
-                            navController.navigate("course_details/$courseId")
+                            navController.navigate(
+                                Screen.StudentCourseDetailScreen.route.replace(
+                                    "{courseId}",
+                                    courseId
+                                )
+                            )
                         }
                     )
                 }

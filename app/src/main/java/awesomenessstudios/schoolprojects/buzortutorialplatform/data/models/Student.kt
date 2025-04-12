@@ -9,5 +9,6 @@ data class Student(
     val password: String = "",
     val grade: String = "",
     val profileImage: String = "",
+    val preferredSubjects: List<String> = listOf(),
     val isVerified: Boolean = false
 )

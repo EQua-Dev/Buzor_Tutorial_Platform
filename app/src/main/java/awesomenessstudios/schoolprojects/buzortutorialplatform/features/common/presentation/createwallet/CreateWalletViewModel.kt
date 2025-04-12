@@ -2,6 +2,7 @@ package awesomenessstudios.schoolprojects.buzortutorialplatform.features.common.
 
 import android.location.Geocoder
 import android.location.Location
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -12,6 +13,8 @@ import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Common.wall
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.LocationUtils
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.UserPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.math.BigInteger
 import java.security.MessageDigest
@@ -31,8 +34,8 @@ class CreateWalletViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    private val _state = mutableStateOf(CreateWalletState())
-    val state: State<CreateWalletState> = _state
+    private val _state = MutableStateFlow(CreateWalletState())
+    val state: StateFlow<CreateWalletState> = _state
 
     init {
         viewModelScope.launch {
@@ -41,7 +44,10 @@ class CreateWalletViewModel @Inject constructor(
                     loggedInUser = userId
                 )
             }
+        }
+        viewModelScope.launch {
             userPreferences.role.collect { role ->
+                Log.d("CWVM", "role: $role")
                 if (role != null) {
                     _state.value = _state.value.copy(
                         userRole = role.name
@@ -86,7 +92,7 @@ class CreateWalletViewModel @Inject constructor(
         locationUtils.getCurrentLocation()
             .addOnSuccessListener { location ->
                 if (location != null) {
-                    val locationAddress = getLocationAddress(location)
+                    val locationAddress = locationUtils.getLocationAddress(location)
                     // Proceed with wallet creation
                     saveWallet(locationAddress)
                 } else {
@@ -127,7 +133,10 @@ class CreateWalletViewModel @Inject constructor(
                 Locale.getDefault()
             ).format(Date()),
             creationLocation = locationAddress,
-            securityHash = securityHash
+            securityHash = securityHash,
+            hashType = _state.value.walletAddressComplexity,
+            securityQuestion1 = _state.value.securityQuestion1,
+            securityQuestion2 = _state.value.securityQuestion2
         )
 
         walletsCollectionRef.document(wallet.id)
@@ -156,12 +165,4 @@ class CreateWalletViewModel @Inject constructor(
         }
     }
 
-    private fun getLocationAddress(location: Location): String {
-        return try {
-            val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-            addresses?.firstOrNull()?.getAddressLine(0) ?: "Unknown Location"
-        } catch (e: Exception) {
-            "Unknown Location"
-        }
-    }
 }
