@@ -134,7 +134,7 @@ class WalletRepositoryImpl @Inject constructor(
 
 
 
-            firestore.collection("wallets")
+            firestore.collection(WALLETS_REF)
                 .document(walletId)
                 .collection("walletHistory")
                 .add(history)
