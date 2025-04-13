@@ -23,4 +23,5 @@
     <string name="grade_label">Your grade</string>
     <string name="grade_hint">Select your school grade</string>
     <string name="student_course_detail_screen">Student Course Detail Screen</string>
+    <string name="course_content_viewer_screen">COntent Content Viewer Screen</string>
 </resources>

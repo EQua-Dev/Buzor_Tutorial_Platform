@@ -6,6 +6,8 @@
 
 package awesomenessstudios.schoolprojects.buzortutorialplatform.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -13,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.courses.coursedetail.presentation.StudentCourseDetailScreen
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.courses.coursedetail.presentation.ViewContentScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.courses.presentation.StudentCoursesScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.profile.presentation.StudentProfileScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.sessions.presentation.StudentSessionScreen
@@ -24,6 +27,7 @@ import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.sessions.presentation.TeacherSessionScreen
 
 
+@RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun StudentBottomNavigationGraph(navController: NavHostController) {
 
@@ -60,6 +64,15 @@ fun StudentBottomNavigationGraph(navController: NavHostController) {
         ) {
             val courseId = it.arguments?.getString("courseId")
             StudentCourseDetailScreen(navController = navController, courseId = courseId!!)
+        }
+        composable(
+            Screen.CourseContentViewerScreen.route,
+            arguments = listOf(
+                navArgument(name = "url") { type = NavType.StringType }
+            ),
+        ) {
+            val url = it.arguments?.getString("url")
+            ViewContentScreen(navController = navController, url = url!!)
         }
         /*composable(
             Screen.FeesSemester.route,

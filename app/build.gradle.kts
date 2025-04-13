@@ -166,7 +166,14 @@ dependencies {
 
     implementation(libs.androidx.biometric)
     implementation(libs.biometric)
+//
+//    // For PDF Viewer
+//    implementation(libs.android.pdf.viewer)
 
+// For ExoPlayer
+    implementation(libs.exoplayer)
+
+    implementation (libs.bouquet)
 
 
 

@@ -57,6 +57,10 @@ sealed class Screen(
         route = "student_course_detail_screen/{courseId}",
         title = R.string.student_course_detail_screen,
     )
+    object CourseContentViewerScreen : Screen(
+        route = "course_content_viewer_screen/{url}",
+        title = R.string.course_content_viewer_screen,
+    )
     /*
         object ChildHome : Screen(
             route = "childhome/{childId}",

@@ -1,7 +1,10 @@
 [versions]
 agp = "8.5.2"
+androidPdfViewer = "3.2.0-beta.1"
 biometric = "1.4.0-alpha02"
+bouquet = "1.1.2"
 coilCompose = "2.4.0"
+exoplayer = "2.18.1"
 kotlin = "1.9.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -49,10 +52,13 @@ firebaseStorageKtx = "21.0.1"
 biometricKtx = "1.1.0"
 
 [libraries]
+android-pdf-viewer = { module = "com.github.barteksc:android-pdf-viewer", version.ref = "androidPdfViewer" }
 androidx-biometric = { module = "androidx.biometric:biometric" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
+bouquet = { module = "io.github.grizzi91:bouquet", version.ref = "bouquet" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+exoplayer = { module = "com.google.android.exoplayer:exoplayer", version.ref = "exoplayer" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

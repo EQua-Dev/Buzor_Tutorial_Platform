@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.Course
+import awesomenessstudios.schoolprojects.buzortutorialplatform.navigation.Screen
 
 
 @Composable
@@ -65,7 +66,12 @@ fun CourseContentView(
                     if (isEnrolled) {
                         Button(
                             onClick = {
-                                navController.navigate("viewContent?url=${Uri.encode(link)}")
+                                navController.navigate(
+                                    Screen.CourseContentViewerScreen.route.replace(
+                                        "{url}",
+                                        Uri.encode(link)
+                                    )
+                                )
                             },
                             modifier = Modifier
                                 .align(Alignment.CenterEnd)
