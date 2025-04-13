@@ -1,4 +1,4 @@
-package awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.wallet.presentation
+package awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.wallet.fundwallet.presentation
 
 data class FundingState(
     val amount: String = "",

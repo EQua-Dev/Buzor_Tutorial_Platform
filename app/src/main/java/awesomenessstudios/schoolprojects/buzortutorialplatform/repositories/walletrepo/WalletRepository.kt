@@ -1,6 +1,7 @@
 package awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.walletrepo
 
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.Wallet
+import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.WalletHistory
 
 interface WalletRepository {
     suspend fun getWalletByUserId(userId: String): Wallet?
@@ -18,5 +19,8 @@ interface WalletRepository {
         description: String,
         sender: String,
     ): Result<Unit>
+
+    fun observeWalletHistory(walletId: String, onUpdate: (List<WalletHistory>) -> Unit)
+
 
 }

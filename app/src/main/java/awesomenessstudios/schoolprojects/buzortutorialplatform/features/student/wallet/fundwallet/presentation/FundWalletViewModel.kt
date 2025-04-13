@@ -1,4 +1,4 @@
-package awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.wallet.presentation
+package awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.wallet.fundwallet.presentation
 
 import android.app.Application
 import android.os.Build
@@ -9,11 +9,9 @@ import androidx.compose.runtime.setValue
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.Wallet
-import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Constants.TEACHERS_REF
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Constants.WALLETS_REF
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.HelpMe
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.rpc.Help
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.math.BigInteger
 import java.security.MessageDigest

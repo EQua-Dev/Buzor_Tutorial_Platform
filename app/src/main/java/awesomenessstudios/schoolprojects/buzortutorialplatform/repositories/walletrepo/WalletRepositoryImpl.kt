@@ -3,8 +3,10 @@ package awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.wal
 import android.util.Log
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.Wallet
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.WalletHistory
+import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Constants.WALLETS_HISTORY_REF
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Constants.WALLETS_REF
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -136,7 +138,7 @@ class WalletRepositoryImpl @Inject constructor(
 
             firestore.collection(WALLETS_REF)
                 .document(walletId)
-                .collection("walletHistory")
+                .collection(WALLETS_HISTORY_REF)
                 .add(history)
                 .await()
         } catch (e: Exception) {
@@ -144,4 +146,19 @@ class WalletRepositoryImpl @Inject constructor(
             Log.e("WalletRepository", "Error adding wallet history", e)
         }
     }
+
+    override fun observeWalletHistory(walletId: String, onUpdate: (List<WalletHistory>) -> Unit) {
+        FirebaseFirestore.getInstance()
+            .collection(WALLETS_REF)
+            .document(walletId)
+            .collection(WALLETS_HISTORY_REF)
+            .orderBy("dateCreated", Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, _ ->
+                if (snapshot != null) {
+                    val history = snapshot.toObjects(WalletHistory::class.java)
+                    onUpdate(history)
+                }
+            }
+    }
+
 }

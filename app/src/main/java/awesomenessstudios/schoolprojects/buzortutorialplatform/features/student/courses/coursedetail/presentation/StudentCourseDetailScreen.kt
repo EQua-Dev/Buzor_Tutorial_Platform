@@ -27,8 +27,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.Result
-import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.wallet.presentation.FundingBottomSheet
-import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.wallet.presentation.findActivity
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.wallet.fundwallet.presentation.FundingBottomSheet
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.wallet.fundwallet.presentation.findActivity
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch

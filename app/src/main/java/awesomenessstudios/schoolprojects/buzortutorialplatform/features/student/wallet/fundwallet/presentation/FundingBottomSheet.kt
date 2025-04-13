@@ -1,10 +1,9 @@
-package awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.wallet.presentation
+package awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.wallet.fundwallet.presentation
 
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.os.Build
-import androidx.activity.compose.LocalActivity
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

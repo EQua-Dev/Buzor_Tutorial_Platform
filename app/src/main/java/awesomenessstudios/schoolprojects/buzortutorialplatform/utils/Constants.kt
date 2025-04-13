@@ -18,4 +18,5 @@ object Constants {
     const val COURSES_REF = "Buzor Courses"
     const val TEACHERS_REF = "Buzor Platform Teachers"
     const val WALLETS_REF = "Buzor Platform Wallets"
+    const val WALLETS_HISTORY_REF = "Buzor Platform Wallets History"
 }
