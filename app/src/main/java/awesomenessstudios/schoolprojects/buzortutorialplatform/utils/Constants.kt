@@ -19,4 +19,6 @@ object Constants {
     const val TEACHERS_REF = "Buzor Platform Teachers"
     const val WALLETS_REF = "Buzor Platform Wallets"
     const val WALLETS_HISTORY_REF = "Buzor Platform Wallets History"
+    const val GROUP_SESSIONS_REF = "Buzor Platform Group Sessions"
+    const val SINGLE_SESSIONS_REF = "Buzor Platform Single Sessions"
 }

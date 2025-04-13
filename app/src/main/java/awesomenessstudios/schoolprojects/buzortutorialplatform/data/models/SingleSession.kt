@@ -10,5 +10,5 @@ data class SingleSession(
     val sessionLink: String = "",
     val price: String = "",
     val dateCreated: String = "",
-
+    val status: String = ""
 )

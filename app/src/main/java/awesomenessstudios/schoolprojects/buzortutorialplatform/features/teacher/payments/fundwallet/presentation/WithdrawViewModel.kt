@@ -20,7 +20,7 @@ import java.security.NoSuchAlgorithmException
 import javax.inject.Inject
 
 @HiltViewModel
-class WithdrawViewModel @Inject constructor(
+class FundingViewModel @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val context: Application
 ) : ViewModel() {

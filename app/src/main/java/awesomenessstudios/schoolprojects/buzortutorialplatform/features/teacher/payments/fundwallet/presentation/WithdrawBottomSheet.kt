@@ -1,4 +1,4 @@
-package awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.wallet.fundwallet.presentation
+package awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.payments.fundwallet.presentation
 
 import android.app.Activity
 import android.content.Context
@@ -32,20 +32,20 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.Wallet
-import dagger.hilt.android.internal.managers.FragmentComponentManager.findActivity
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.wallet.fundwallet.presentation.WithdrawViewModel
+
 
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
-fun FundingBottomSheet(
+fun WithdrawBottomSheet(
     wallet: Wallet,
-    viewModel: FundingViewModel = hiltViewModel(),
+    viewModel: WithdrawViewModel = hiltViewModel(),
     onClose: () -> Unit,
     onSuccess: () -> Unit
 ) {
     val context = LocalContext.current
     val activity = remember(context) {
-        findActivity(context)
-            ?.takeIf { it is FragmentActivity } as? FragmentActivity
+        context.findActivity()?.takeIf { it is FragmentActivity } as? FragmentActivity
     }
     val state = viewModel.state
     Box(

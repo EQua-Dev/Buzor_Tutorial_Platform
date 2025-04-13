@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,17 +36,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import awesomenessstudios.schoolprojects.buzortutorialplatform.data.Result
-import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.wallet.fundwallet.presentation.FundingBottomSheet
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.payments.fundwallet.presentation.WithdrawBottomSheet
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.payments.presentation.TeacherPaymentsViewModel
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.payments.presentation.TeacherPaymentsEvent
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun StudentWalletScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    viewModel: StudentWalletViewModel = hiltViewModel()
+    viewModel: TeacherPaymentsViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
@@ -81,7 +80,7 @@ fun StudentWalletScreen(
                     }
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = { viewModel.onEvent(WalletEvent.ToggleBalanceVisibility) }) {
+                    IconButton(onClick = { viewModel.onEvent(TeacherPaymentsEvent.ToggleBalanceVisibility) }) {
                         Icon(
                             imageVector = if (state.isBalanceVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                             contentDescription = null
@@ -105,7 +104,7 @@ fun StudentWalletScreen(
             listOf("All", "Credit", "Debit").forEach { filter ->
                 FilterChip(
                     selected = state.filter == filter,
-                    onClick = { viewModel.onEvent(WalletEvent.OnFilterChange(filter)) },
+                    onClick = { viewModel.onEvent(TeacherPaymentsEvent.OnFilterChange(filter)) },
                     label = { Text(filter) },
                     modifier = Modifier.padding(end = 8.dp)
                 )
@@ -124,7 +123,7 @@ fun StudentWalletScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
-                        .clickable { viewModel.onEvent(WalletEvent.OnTransactionClick(transaction)) },
+                        .clickable { viewModel.onEvent(TeacherPaymentsEvent.OnTransactionClick(transaction)) },
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(Modifier.padding(12.dp)) {
@@ -158,9 +157,9 @@ fun StudentWalletScreen(
 
     state.selectedTransaction?.let { transaction ->
         AlertDialog(
-            onDismissRequest = { viewModel.onEvent(WalletEvent.OnDismissDialog) },
+            onDismissRequest = { viewModel.onEvent(TeacherPaymentsEvent.OnDismissDialog) },
             confirmButton = {
-                TextButton(onClick = { viewModel.onEvent(WalletEvent.OnDismissDialog) }) {
+                TextButton(onClick = { viewModel.onEvent(TeacherPaymentsEvent.OnDismissDialog) }) {
                     Text("Close")
                 }
             },
@@ -180,7 +179,7 @@ fun StudentWalletScreen(
     }
     if (state.showFundingDialog) {
         state.walletState?.let { it1 ->
-            FundingBottomSheet(
+            WithdrawBottomSheet(
                 wallet = it1,
                 onSuccess = {
                     viewModel.dismissFundingDialog()

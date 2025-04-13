@@ -83,7 +83,7 @@ fun StudentHomeScreen(
                 },
                 actions = {
                     Text("Logout", modifier = Modifier.clickable {
-                        navController.navigate(Screen.InitRoleTypeScreen.route)
+                        baseNavHostController.navigate(Screen.InitRoleTypeScreen.route)
 //                        onLogout()
                     })
                     /* DropdownMenu(

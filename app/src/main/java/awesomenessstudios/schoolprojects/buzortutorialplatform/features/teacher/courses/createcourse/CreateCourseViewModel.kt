@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.Course
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.CourseSection
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.GroupSession
+import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Constants.COURSES_REF
+import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Constants.GROUP_SESSIONS_REF
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.OpenAIService
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.UserPreferences
 import com.google.firebase.auth.FirebaseAuth
@@ -153,6 +155,10 @@ class CreateCourseViewModel @Inject constructor(
             CreateCourseEvent.CreateCourse -> {
                 createCourse()
             }
+
+            is CreateCourseEvent.GroupSessionDateChanged -> {
+                _state.value = _state.value.copy(sessionDate = event.date)
+            }
         }
     }
 
@@ -228,14 +234,17 @@ class CreateCourseViewModel @Inject constructor(
 
                 // Save course to Firestore
                 val course = Course(
-                    id = db.collection("Buzor Platform Courses").document().id,
+                    id = db.collection(COURSES_REF).document().id,
                     title = _state.value.title,
-                    ownerId = _state.value.loggedInUser,
+                    ownerId = _state.value.loggedInUser.takeIf { !it.isNullOrBlank() }
+                        ?: FirebaseAuth.getInstance().currentUser?.uid.orEmpty(),
                     price = _state.value.price,
                     subject = _state.value.subject,
                     targetGrades = _state.value.targetGrades,
                     coverImage = coverImageUrl,
                     description = _state.value.description,
+                    allowPrivateSessions = _state.value.allowPrivateSessions,
+                    privateSessionPrice = _state.value.privateSessionPrice,
                     courseNoteOneTitle = sections.getOrNull(0)?.title ?: "",
                     courseNoteOne = sections.getOrNull(0)?.material ?: "",
                     courseNoteOneFootnote = sections.getOrNull(0)?.footnote ?: "",
@@ -251,12 +260,12 @@ class CreateCourseViewModel @Inject constructor(
                     ).format(Date())
                 )
 
-                db.collection("Buzor Courses").document(course.id).set(course).await()
+                db.collection(COURSES_REF).document(course.id).set(course).await()
 
                 // Save group session to Firestore if enabled
                 if (_state.value.allowGroupSessions) {
                     val groupSession = GroupSession(
-                        id = db.collection("Buzor Platform Group Sessions").document().id,
+                        id = db.collection(GROUP_SESSIONS_REF).document().id,
                         courseId = course.id,
                         teacherId = _state.value.loggedInUser,
                         students = listOf(),
@@ -270,7 +279,7 @@ class CreateCourseViewModel @Inject constructor(
                             Locale.getDefault()
                         ).format(Date())
                     )
-                    db.collection("Buzor Platform Group Sessions").document(groupSession.id)
+                    db.collection(GROUP_SESSIONS_REF).document(groupSession.id)
                         .set(groupSession).await()
                 }
 

@@ -16,6 +16,7 @@ sealed class CreateCourseEvent {
     data class PrivateSessionPriceChanged(val price: String) : CreateCourseEvent()
     data class GroupSessionChanged(val allow: Boolean) : CreateCourseEvent()
     data class GroupSessionPriceChanged(val price: String) : CreateCourseEvent()
+    data class GroupSessionDateChanged(val date: String) : CreateCourseEvent()
     object IncreaseMaxSeats : CreateCourseEvent()
     object DecreaseMaxSeats : CreateCourseEvent()
     object CreateCourse : CreateCourseEvent()

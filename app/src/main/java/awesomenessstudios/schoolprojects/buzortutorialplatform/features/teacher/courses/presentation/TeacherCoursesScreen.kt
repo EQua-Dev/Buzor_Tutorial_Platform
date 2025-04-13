@@ -191,7 +191,7 @@ fun CourseCard(
                 }
 
                 Text(
-                    text = "${course.enrolledStudents} students enrolled",
+                    text = "${course.enrolledStudents.size} students enrolled",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

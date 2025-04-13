@@ -1,5 +1,7 @@
 package awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.courses.createcourse
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,16 +25,30 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import awesomenessstudios.schoolprojects.buzortutorialplatform.components.DateTimePickerDialog
 import coil.compose.rememberImagePainter
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SessionOptionsScreen(
     viewModel: CreateCourseViewModel,
     onCreateCourse: () -> Unit
 ) {
     val state = viewModel.state.value
+    var showPicker by remember { mutableStateOf(false) }
+    var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
+    var selectedTime by remember { mutableStateOf<LocalTime?>(null) }
+
 
     Column(
         modifier = Modifier
@@ -48,7 +64,10 @@ fun SessionOptionsScreen(
         ) {
             Text(state.title, style = MaterialTheme.typography.headlineSmall)
             IconButton(onClick = { /* Show bottom sheet */ }) {
-                Icon(imageVector = Icons.Default.Visibility, contentDescription = "Preview Description")
+                Icon(
+                    imageVector = Icons.Default.Visibility,
+                    contentDescription = "Preview Description"
+                )
             }
         }
 
@@ -117,7 +136,10 @@ fun SessionOptionsScreen(
                 Text("Max Seats")
                 Row {
                     IconButton(onClick = { viewModel.onEvent(CreateCourseEvent.DecreaseMaxSeats) }) {
-                        Icon(imageVector = Icons.Default.Remove, contentDescription = "Decrease Seats")
+                        Icon(
+                            imageVector = Icons.Default.Remove,
+                            contentDescription = "Decrease Seats"
+                        )
                     }
                     Text("${state.maxSeats}")
                     IconButton(onClick = { viewModel.onEvent(CreateCourseEvent.IncreaseMaxSeats) }) {
@@ -136,7 +158,7 @@ fun SessionOptionsScreen(
 
             // Date and Time Picker
             Button(
-                onClick = { /* Open date and time picker */ },
+                onClick = { showPicker = true },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Select Session Date and Time")
@@ -152,5 +174,33 @@ fun SessionOptionsScreen(
         ) {
             Text("Create Course")
         }
+
+        selectedDate?.let { date ->
+            selectedTime?.let { time ->
+                val millis = date
+                    .atTime(time)
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli()
+
+                viewModel.onEvent(CreateCourseEvent.GroupSessionDateChanged(millis.toString()))
+                Text(
+                    "Selected: ${date.format(DateTimeFormatter.ISO_DATE)} at ${
+                        time.format(
+                            DateTimeFormatter.ofPattern("hh:mm a")
+                        )
+                    }"
+                )
+            }
+        }
+
+        DateTimePickerDialog(
+            show = showPicker,
+            onDismiss = { showPicker = false },
+            onDateTimeSelected = { date, time ->
+                selectedDate = date
+                selectedTime = time
+            }
+        )
     }
 }

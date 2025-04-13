@@ -9,6 +9,8 @@ data class Course(
     val targetGrades: List<String> = listOf(),
     val coverImage: String = "",
     val description: String = "",
+    val allowPrivateSessions: Boolean = true,
+    val privateSessionPrice: String = "",
     val rating: Double = 0.0,
     val courseNoteOneTitle: String = "",
     val courseNoteOne: String = "",

@@ -45,4 +45,19 @@ class UserPreferences(private val context: Context) {
         .map { preferences ->
             preferences[USER_ID] ?: "" // Default to UNKNOWN if no role is stored
         }
+
+    // Clear the user ID
+    suspend fun clearUserId() {
+        context.dataStore.edit { preferences ->
+            preferences.remove(USER_ID)
+        }
+    }
+
+    // Optional: Clear all user data (role and ID)
+    suspend fun clearAllUserData() {
+        context.dataStore.edit { preferences ->
+            preferences.remove(USER_ID)
+            preferences.remove(ROLE_KEY)
+        }
+    }
 }

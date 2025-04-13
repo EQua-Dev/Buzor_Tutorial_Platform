@@ -1,19 +1,17 @@
-package awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.wallet.presentation
+package awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.payments.presentation
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.payments.presentation.TeacherPaymentsEvent
-import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.payments.presentation.TeacherPaymentsUiState
 import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.walletrepo.WalletRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class StudentWalletViewModel @Inject constructor(
+class TeacherPaymentsViewModel @Inject constructor(
     private val walletRepository: WalletRepository
 ) : ViewModel() {
 

@@ -27,10 +27,10 @@ import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.Result
-import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.wallet.fundwallet.presentation.FundingBottomSheet
-import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.wallet.fundwallet.presentation.findActivity
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.payments.fundwallet.presentation.WithdrawBottomSheet
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.internal.managers.FragmentComponentManager.findActivity
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.P)
@@ -44,7 +44,8 @@ fun StudentCourseDetailScreen(
 
     val context = LocalContext.current
     val activity = remember(context) {
-        context.findActivity()?.takeIf { it is FragmentActivity } as? FragmentActivity
+        findActivity(context)
+            ?.takeIf { it is FragmentActivity } as? FragmentActivity
     }
 
     val course = viewModel.courseState
@@ -152,7 +153,7 @@ fun StudentCourseDetailScreen(
         }
         if (showFundingDialog) {
             viewModel.walletState?.let { it1 ->
-                FundingBottomSheet(
+                WithdrawBottomSheet(
                     wallet = it1,
                     onSuccess = {
                         viewModel.dismissFundingDialog()
