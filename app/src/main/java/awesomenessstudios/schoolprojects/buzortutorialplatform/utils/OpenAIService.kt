@@ -5,8 +5,10 @@ import com.aallam.openai.api.BetaOpenAI
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
+import com.aallam.openai.api.exception.OpenAIAPIException
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 class OpenAIService(private val apiKey: String) {
@@ -36,8 +38,25 @@ class OpenAIService(private val apiKey: String) {
                 )
             )
         )
+        var attempt = 0
+        val maxAttempts = 3
 
-        val completion = openAI.chatCompletion(chatCompletionRequest)
-        return completion.choices.firstOrNull()?.message?.content ?: "Failed to generate description."
+        while (attempt < maxAttempts) {
+            try {
+                val completion = openAI.chatCompletion(chatCompletionRequest)
+                return completion.choices.firstOrNull()?.message?.content ?: "Failed to generate description."
+            } catch (e: OpenAIAPIException) { // Make sure you import or catch the right OpenAI exception
+                if (e.statusCode == 429) {
+                    attempt++
+                    Log.w(this.javaClass.name, "Rate limited (429), retrying attempt $attempt...")
+                    delay(2000L * attempt) // wait longer each retry (e.g., 2s, 4s, 6s)
+                } else {
+                    throw e // If it's another error (not 429), rethrow
+                }
+            }
+        }
+
+        return "Failed to generate description after retries."
+
     }
 }

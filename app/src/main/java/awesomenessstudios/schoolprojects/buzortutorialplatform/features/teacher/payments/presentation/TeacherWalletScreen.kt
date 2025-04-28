@@ -88,7 +88,7 @@ fun TeacherPaymentsScreen(
                     Button(onClick = {
                         viewModel.showFundingDialog()
                     }) {
-                        Text("Fund Wallet")
+                        Text("Withdraw Funds")
                     }
                 }
             }

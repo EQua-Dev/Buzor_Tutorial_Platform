@@ -1,8 +1,10 @@
 package awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.walletrepo
 
 import android.util.Log
+import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.Escrow
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.Wallet
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.WalletHistory
+import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Constants.ESCROW_REF
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Constants.WALLETS_HISTORY_REF
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Constants.WALLETS_REF
 import com.google.firebase.firestore.FirebaseFirestore
@@ -159,6 +161,39 @@ class WalletRepositoryImpl @Inject constructor(
                     onUpdate(history)
                 }
             }
+    }
+
+    override suspend fun addToEscrow(
+        amount: Double,
+        studentWalletId: String,
+        teacherWalletId: String,
+        sessionType: String,
+//        sessionId: String,
+        courseId: String
+    ): Result<Unit> {
+        return try {
+            val escrowId = firestore.collection(ESCROW_REF).document().id
+
+            val escrow = Escrow(
+                id = escrowId,
+                amount = amount.toString(),
+                studentWallet = studentWalletId,
+                teacherWallet = teacherWalletId,
+                sessionType = sessionType,
+//                sessionId = sessionId,
+                courseId = courseId,
+                dateCreated = System.currentTimeMillis().toString()
+            )
+
+            firestore.collection(ESCROW_REF)
+                .document(escrowId)
+                .set(escrow)
+                .await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
 }

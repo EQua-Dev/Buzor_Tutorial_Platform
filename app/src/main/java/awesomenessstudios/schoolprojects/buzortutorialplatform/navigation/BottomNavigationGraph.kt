@@ -19,6 +19,7 @@ import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.courses.presentation.StudentCoursesScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.profile.presentation.StudentProfileScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.sessions.presentation.StudentSessionScreen
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.wallet.presentation.StudentWalletScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.payments.presentation.TeacherPaymentsScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.courses.createcourse.CreateCourseFlowScreen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.courses.presentation.TeacherCoursesScreen
@@ -47,12 +48,12 @@ fun StudentBottomNavigationGraph(navController: NavHostController) {
         composable(
             route = StudentBottomBarScreen.Wallet.route
         ) {
-            TeacherPaymentsScreen(navController = navController)
+            StudentWalletScreen(navController = navController)
         }
         composable(
             route = StudentBottomBarScreen.Profile.route
         ) {
-            StudentProfileScreen(navController = navController)
+            StudentProfileScreen(/*navController = navController*/)
         }
 
         composable(
@@ -110,6 +111,7 @@ fun StudentBottomNavigationGraph(navController: NavHostController) {
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TeacherBottomNavigationGraph(navController: NavHostController) {
 

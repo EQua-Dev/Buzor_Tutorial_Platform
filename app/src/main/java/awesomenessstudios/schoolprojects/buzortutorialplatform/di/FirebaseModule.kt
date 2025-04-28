@@ -4,6 +4,8 @@ import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.cour
 import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.coursesrepo.CourseRepositoryImpl
 import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.sessionrepo.SessionRepository
 import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.sessionrepo.SessionRepositoryImpl
+import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.studentrepo.StudentRepository
+import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.studentrepo.StudentRepositoryImpl
 import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.teacherrepo.TeacherRepository
 import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.teacherrepo.TeacherRepositoryImpl
 import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.walletrepo.WalletRepository
@@ -72,13 +74,12 @@ object FirebaseModule {
     ): SessionRepository {
         return SessionRepositoryImpl(firestore)
     }
-    /*
         @Provides
         @Singleton
-        fun provideCitizensRepository(
+        fun provideStudentRepository(
             firestore: FirebaseFirestore,
             storage: FirebaseStorage
-        ): CitizenRepository {
-            return CitizenRepositoryImpl(firestore, storage)
-        }*/
+        ): StudentRepository {
+            return StudentRepositoryImpl(firestore)
+        }
 }

@@ -39,6 +39,7 @@ import androidx.navigation.NavHostController
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.payments.fundwallet.presentation.WithdrawBottomSheet
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.payments.presentation.TeacherPaymentsViewModel
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.payments.presentation.TeacherPaymentsEvent
+import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.getDate
 import com.google.firebase.auth.FirebaseAuth
 
 @RequiresApi(Build.VERSION_CODES.P)
@@ -46,7 +47,7 @@ import com.google.firebase.auth.FirebaseAuth
 fun StudentWalletScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    viewModel: TeacherPaymentsViewModel = hiltViewModel()
+    viewModel: StudentWalletViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
@@ -71,22 +72,27 @@ fun StudentWalletScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text("Balance", style = MaterialTheme.typography.labelMedium)
-                    if (state.isBalanceVisible) {
-                        Text("₦${state.balance}", style = MaterialTheme.typography.headlineSmall)
-                    } else {
-                        Text("••••••", style = MaterialTheme.typography.headlineSmall)
-                    }
-                }
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = { viewModel.onEvent(TeacherPaymentsEvent.ToggleBalanceVisibility) }) {
+                    Column {
+                        Text("Balance", style = MaterialTheme.typography.labelMedium)
+                        if (state.isBalanceVisible) {
+                            Text(
+                                "€${state.balance}",
+                                style = MaterialTheme.typography.headlineSmall
+                            )
+                        } else {
+                            Text("••••••", style = MaterialTheme.typography.headlineSmall)
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    IconButton(onClick = { viewModel.onEvent(WalletEvent.ToggleBalanceVisibility) }) {
                         Icon(
                             imageVector = if (state.isBalanceVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                             contentDescription = null
                         )
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
+                }
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(0.3f)) {
                     Button(onClick = {
                         viewModel.showFundingDialog()
                     }) {
@@ -104,7 +110,7 @@ fun StudentWalletScreen(
             listOf("All", "Credit", "Debit").forEach { filter ->
                 FilterChip(
                     selected = state.filter == filter,
-                    onClick = { viewModel.onEvent(TeacherPaymentsEvent.OnFilterChange(filter)) },
+                    onClick = { viewModel.onEvent(WalletEvent.OnFilterChange(filter)) },
                     label = { Text(filter) },
                     modifier = Modifier.padding(end = 8.dp)
                 )
@@ -123,7 +129,7 @@ fun StudentWalletScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
-                        .clickable { viewModel.onEvent(TeacherPaymentsEvent.OnTransactionClick(transaction)) },
+                        .clickable { viewModel.onEvent(WalletEvent.OnTransactionClick(transaction)) },
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(Modifier.padding(12.dp)) {
@@ -131,8 +137,16 @@ fun StudentWalletScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(text = transaction.dateCreated)
-                            Text(text = transaction.transactionType.capitalize())
+                            Text(
+                                text = getDate(
+                                    transaction.dateCreated.trim().toLong(),
+                                    "EEE, dd MMM yyyy | hh:mm a"
+                                )
+                            )
+                            Text(
+                                text = transaction.transactionType.capitalize(),
+                                modifier = Modifier.weight(0.3f)
+                            )
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                         Row(
@@ -144,9 +158,10 @@ fun StudentWalletScreen(
                                 if (transaction.transactionType == "credit") Color.Green else Color.Red
                             val prefix = if (transaction.transactionType == "credit") "+" else "-"
                             Text(
-                                text = "$prefix₦${transaction.amount}",
+                                text = "$prefix€${transaction.amount}",
                                 color = amountColor,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.weight(0.3f)
                             )
                         }
                     }
@@ -157,9 +172,9 @@ fun StudentWalletScreen(
 
     state.selectedTransaction?.let { transaction ->
         AlertDialog(
-            onDismissRequest = { viewModel.onEvent(TeacherPaymentsEvent.OnDismissDialog) },
+            onDismissRequest = { viewModel.onEvent(WalletEvent.OnDismissDialog) },
             confirmButton = {
-                TextButton(onClick = { viewModel.onEvent(TeacherPaymentsEvent.OnDismissDialog) }) {
+                TextButton(onClick = { viewModel.onEvent(WalletEvent.OnDismissDialog) }) {
                     Text("Close")
                 }
             },

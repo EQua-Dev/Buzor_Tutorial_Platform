@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.Course
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.CourseSection
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.GroupSession
+import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Constants
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Constants.COURSES_REF
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Constants.GROUP_SESSIONS_REF
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.OpenAIService
@@ -45,11 +46,11 @@ class CreateCourseViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            userPreferences.loggedInUserId.collect { userId ->
+
                 _state.value = _state.value.copy(
-                    loggedInUser = userId
+                    loggedInUser = auth.currentUser!!.uid
                 )
-            }
+
         }
     }
 
@@ -193,7 +194,7 @@ class CreateCourseViewModel @Inject constructor(
     // Create a Zoom meeting link (mock implementation)
     private suspend fun createZoomMeeting(): String {
         // Replace with actual Zoom API integration
-        return "https://zoom.us/j/1234567890"
+        return Constants.ZOOM_LINK
     }
 
     // Save the course to Firestore

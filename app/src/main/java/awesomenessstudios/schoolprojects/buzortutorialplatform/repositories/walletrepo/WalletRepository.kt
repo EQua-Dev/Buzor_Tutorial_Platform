@@ -21,6 +21,13 @@ interface WalletRepository {
     ): Result<Unit>
 
     fun observeWalletHistory(walletId: String, onUpdate: (List<WalletHistory>) -> Unit)
-
+    suspend fun addToEscrow(
+        amount: Double,
+        studentWalletId: String,
+        teacherWalletId: String,
+        sessionType: String,
+//        sessionId: String,
+        courseId: String
+    ): Result<Unit>
 
 }

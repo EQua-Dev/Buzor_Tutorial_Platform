@@ -1,14 +1,14 @@
 package awesomenessstudios.schoolprojects.buzortutorialplatform.data.models
 
 data class SingleSession(
-    val id: String = "",
-    val courseId: String = "",
-    val teacherId: String = "",
-    val startTime: String = "",
-    val type: String = "",
+    override val id: String = "",
+    override val courseId: String = "",
+    override val teacherId: String = "",
+    override val startTime: String = "",
+    override val type: String = "",
     val studentId: String = "",
-    val sessionLink: String = "",
-    val price: String = "",
-    val dateCreated: String = "",
-    val status: String = ""
-)
+    override val sessionLink: String = "",
+    override val price: String = "",
+    override val dateCreated: String = "",
+    override val status: String = ""
+): Session

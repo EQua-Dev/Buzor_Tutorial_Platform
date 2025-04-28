@@ -32,7 +32,7 @@ android {
             buildConfigField(
                 "String",
                 "OPEN_AI_KEY",
-                "\"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\""
+                "\"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\""
             )
         }
         release {
@@ -40,7 +40,7 @@ android {
             buildConfigField(
                 "String",
                 "OPEN_AI_KEY",
-                "\"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\""
+                "\"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\""
             )
 
             proguardFiles(

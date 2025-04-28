@@ -10,12 +10,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -60,11 +67,8 @@ fun TeacherRegistrationScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Text(
-            text = "Teacher Registration",
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold
-        )
+        Text(text = "Teacher Registration", style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center,)
+
 
         // First Name
         OutlinedTextField(
@@ -97,13 +101,29 @@ fun TeacherRegistrationScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         // Password
+        var passwordVisible by remember { mutableStateOf(false) }
+
         OutlinedTextField(
             value = state.value.password,
             onValueChange = { viewModel.onEvent(TeacherRegistrationEvent.PasswordChanged(it)) },
             label = { Text("Password") },
             modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                val image = if (passwordVisible)
+                    Icons.Default.Visibility
+                else
+                    Icons.Default.VisibilityOff
+
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(
+                        imageVector = image,
+                        contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                    )
+                }
+            }
         )
+
 
         Spacer(modifier = Modifier.height(8.dp))
 

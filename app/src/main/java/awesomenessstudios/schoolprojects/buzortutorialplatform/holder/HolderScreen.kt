@@ -190,6 +190,7 @@ fun ScaffoldSection(
                 composable(Screen.Login.route) {
                     onStatusBarColorChange(MaterialTheme.colorScheme.background)
                     LoginScreen(
+                        navController = controller,
                         onLoginSuccess = { userRole ->
                             if (userRole === UserRole.TEACHER.name) {
                                 controller.navigate(Screen.TeacherHome.route)

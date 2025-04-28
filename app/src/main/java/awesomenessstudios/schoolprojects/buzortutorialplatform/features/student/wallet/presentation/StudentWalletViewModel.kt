@@ -34,16 +34,16 @@ class StudentWalletViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: TeacherPaymentsEvent) {
+    fun onEvent(event: WalletEvent) {
         when (event) {
-            is TeacherPaymentsEvent.OnFilterChange -> state = state.copy(filter = event.filter)
-            is TeacherPaymentsEvent.ToggleBalanceVisibility -> state =
+            is WalletEvent.OnFilterChange -> state = state.copy(filter = event.filter)
+            is WalletEvent.ToggleBalanceVisibility -> state =
                 state.copy(isBalanceVisible = !state.isBalanceVisible)
 
-            is TeacherPaymentsEvent.OnTransactionClick -> state =
+            is WalletEvent.OnTransactionClick -> state =
                 state.copy(selectedTransaction = event.transaction)
 
-            is TeacherPaymentsEvent.OnDismissDialog -> state = state.copy(selectedTransaction = null)
+            is WalletEvent.OnDismissDialog -> state = state.copy(selectedTransaction = null)
         }
     }
 

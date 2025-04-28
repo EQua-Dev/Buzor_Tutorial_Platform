@@ -33,12 +33,12 @@ fun Context.toast(message: String) =
 @Composable
 fun LoadingDialog(modifier: Modifier = Modifier) {
 
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.crithink))
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.5f)), // 50% opacity
+            .background(Color.Black.copy(alpha = 0.2f)), // 50% opacity
         contentAlignment = Alignment.Center
     ) {
 
