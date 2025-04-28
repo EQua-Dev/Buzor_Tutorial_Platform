@@ -92,7 +92,7 @@ fun CourseSessionsView(course: Course, viewModel: StudentCourseDetailViewModel =
                             text = "Request Private Session",
                             style = MaterialTheme.typography.bodySmall
                         )
-                        Text(text = "€${course.privateSessionPrice}")
+                        Text(text = "₦${course.privateSessionPrice}")
                     }
                 }
         }
@@ -245,7 +245,7 @@ fun CourseSessionCard(
                 Column(modifier = Modifier.weight(0.7f)) {
                     Text(text = "Date: $date")
                     Text(text = "Time: $time")
-                    Text(text = "Price: €$price")
+                    Text(text = "Price: ₦$price")
                 }
                 Divider(
                     color = Color.Gray,

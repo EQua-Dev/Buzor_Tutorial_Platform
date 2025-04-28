@@ -69,7 +69,6 @@ fun StudentWalletScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -77,7 +76,7 @@ fun StudentWalletScreen(
                         Text("Balance", style = MaterialTheme.typography.labelMedium)
                         if (state.isBalanceVisible) {
                             Text(
-                                "€${state.balance}",
+                                "₦${state.balance}",
                                 style = MaterialTheme.typography.headlineSmall
                             )
                         } else {
@@ -92,7 +91,10 @@ fun StudentWalletScreen(
                         )
                     }
                 }
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(0.3f)) {
+
+                Spacer(modifier = Modifier.weight(1f)) // 👈 This pushes the next Row to the END
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Button(onClick = {
                         viewModel.showFundingDialog()
                     }) {
@@ -135,7 +137,7 @@ fun StudentWalletScreen(
                     Column(Modifier.padding(12.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
                                 text = getDate(
@@ -143,28 +145,28 @@ fun StudentWalletScreen(
                                     "EEE, dd MMM yyyy | hh:mm a"
                                 )
                             )
+                            Spacer(modifier = Modifier.weight(1f))
                             Text(
                                 text = transaction.transactionType.capitalize(),
-                                modifier = Modifier.weight(0.3f)
                             )
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(transaction.description)
-                            val amountColor =
-                                if (transaction.transactionType == "credit") Color.Green else Color.Red
+                            Spacer(modifier = Modifier.weight(1f))
+                            val amountColor = if (transaction.transactionType == "credit") Color.Green else Color.Red
                             val prefix = if (transaction.transactionType == "credit") "+" else "-"
                             Text(
-                                text = "$prefix€${transaction.amount}",
+                                text = "$prefix₦${transaction.amount}",
                                 color = amountColor,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.weight(0.3f)
                             )
                         }
                     }
+
                 }
             }
         }

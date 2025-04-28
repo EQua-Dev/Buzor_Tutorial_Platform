@@ -84,7 +84,7 @@ fun StudentCourseDetailScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = it.title, style = MaterialTheme.typography.titleMedium)
-                Text(text = "€${it.price}", style = MaterialTheme.typography.titleMedium)
+                Text(text = "₦${it.price}", style = MaterialTheme.typography.titleMedium)
             }
 
             Text(
