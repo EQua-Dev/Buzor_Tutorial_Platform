@@ -114,16 +114,19 @@ fun CourseSessionsView(course: Course, viewModel: StudentCourseDetailViewModel =
                     .height(200.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "This course has no upcoming group sessions.",
-                    textAlign = TextAlign.Center
-                )
-
-                if (course.privateSessionPrice != "")
+                Column {
                     Text(
-                        text = "You can request a private one.",
+                        text = "This course has no upcoming group sessions.",
                         textAlign = TextAlign.Center
                     )
+
+                    if (course.privateSessionPrice != "")
+                        Text(
+                            text = "You can request a private one.",
+                            textAlign = TextAlign.Center
+                        )
+                }
+
             }
 
         } else {

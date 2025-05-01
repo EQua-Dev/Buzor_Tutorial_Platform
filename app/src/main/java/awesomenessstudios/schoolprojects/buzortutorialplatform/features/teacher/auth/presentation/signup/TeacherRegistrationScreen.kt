@@ -3,6 +3,7 @@ package awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher
 import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -67,149 +68,156 @@ fun TeacherRegistrationScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Text(text = "Teacher Registration", style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center,)
-
-
-        // First Name
-        OutlinedTextField(
-            value = state.value.firstName,
-            onValueChange = { viewModel.onEvent(TeacherRegistrationEvent.FirstNameChanged(it)) },
-            label = { Text("First Name") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Last Name
-        OutlinedTextField(
-            value = state.value.lastName,
-            onValueChange = { viewModel.onEvent(TeacherRegistrationEvent.LastNameChanged(it)) },
-            label = { Text("Last Name") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Email
-        OutlinedTextField(
-            value = state.value.email,
-            onValueChange = { viewModel.onEvent(TeacherRegistrationEvent.EmailChanged(it)) },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Password
-        var passwordVisible by remember { mutableStateOf(false) }
-
-        OutlinedTextField(
-            value = state.value.password,
-            onValueChange = { viewModel.onEvent(TeacherRegistrationEvent.PasswordChanged(it)) },
-            label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            trailingIcon = {
-                val image = if (passwordVisible)
-                    Icons.Default.Visibility
-                else
-                    Icons.Default.VisibilityOff
-
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(
-                        imageVector = image,
-                        contentDescription = if (passwordVisible) "Hide password" else "Show password"
-                    )
-                }
-            }
-        )
-
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Phone Number
-        OutlinedTextField(
-            value = state.value.phoneNumber,
-            onValueChange = { viewModel.onEvent(TeacherRegistrationEvent.PhoneNumberChanged(it)) },
-            label = { Text("Phone Number") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Subjects Dropdown
-        AssimOutlinedDropdown(
-            label = stringResource(id = R.string.subjects_label),
-            hint = stringResource(id = R.string.subjects_hint),
-            options = subjects,
-            selectedValue = state.value.subjects.joinToString(", "),
-            onValueSelected = { viewModel.onEvent(TeacherRegistrationEvent.SubjectsChanged(it.toString())) },
-            isCompulsory = true,
-//            error = state.genderError?.let { stringResource(id = it) },
-            isSearchable = true // Enable search functionality
-        )
-       /* var expanded by remember { mutableStateOf(false) }
-
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded }
-        ) {
-            OutlinedTextField(
-                value = state.value.subjects.joinToString(", "),
-                onValueChange = {},
-                label = { Text("Subjects") },
-                modifier = Modifier.fillMaxWidth(),
-                readOnly = true,
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                }
-            )
-
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                subjects.forEach { subject ->
-                    DropdownMenuItem(
-                        text = {
-                            Text(text = subject)
-                        },
-                        onClick = {
-                            viewModel.onEvent(TeacherRegistrationEvent.SubjectsChanged(subject))
-                        },
-                        modifier = Modifier.background(color = Color.Red)
-                    )
-                }
-            }
-        }*/
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Register Button
-        Button(
-            onClick = { viewModel.onEvent(TeacherRegistrationEvent.Register(activity!!)) },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Register")
-        }
         if (state.value.isOtpSent) {
-            // OTP Input Field
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                Text(text = "Enter OTP Sent to your device", style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center,)
+                // OTP Input Field
+                OutlinedTextField(
+                    value = state.value.otp,
+                    onValueChange = { viewModel.onEvent(TeacherRegistrationEvent.OtpChanged(it)) },
+                    label = { Text("Enter OTP") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Verify Button
+                Button(
+                    onClick = { viewModel.onEvent(TeacherRegistrationEvent.VerifyOtp) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Verify OTP")
+                }
+            }
+
+        }else
+        {
+
+            Text(text = "Teacher Registration", style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center,)
+
+
+            // First Name
             OutlinedTextField(
-                value = state.value.otp,
-                onValueChange = { viewModel.onEvent(TeacherRegistrationEvent.OtpChanged(it)) },
-                label = { Text("Enter OTP") },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                value = state.value.firstName,
+                onValueChange = { viewModel.onEvent(TeacherRegistrationEvent.FirstNameChanged(it)) },
+                label = { Text("First Name") },
+                modifier = Modifier.fillMaxWidth()
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Last Name
+            OutlinedTextField(
+                value = state.value.lastName,
+                onValueChange = { viewModel.onEvent(TeacherRegistrationEvent.LastNameChanged(it)) },
+                label = { Text("Last Name") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Email
+            OutlinedTextField(
+                value = state.value.email,
+                onValueChange = { viewModel.onEvent(TeacherRegistrationEvent.EmailChanged(it)) },
+                label = { Text("Email") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Password
+            var passwordVisible by remember { mutableStateOf(false) }
+
+            OutlinedTextField(
+                value = state.value.password,
+                onValueChange = { viewModel.onEvent(TeacherRegistrationEvent.PasswordChanged(it)) },
+                label = { Text("Password") },
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    val image = if (passwordVisible)
+                        Icons.Default.Visibility
+                    else
+                        Icons.Default.VisibilityOff
+
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(
+                            imageVector = image,
+                            contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                        )
+                    }
+                }
+            )
+
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Phone Number
+            OutlinedTextField(
+                value = state.value.phoneNumber,
+                onValueChange = { viewModel.onEvent(TeacherRegistrationEvent.PhoneNumberChanged(it)) },
+                label = { Text("Phone Number") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Subjects Dropdown
+            AssimOutlinedDropdown(
+                label = stringResource(id = R.string.subjects_label),
+                hint = stringResource(id = R.string.subjects_hint),
+                options = subjects,
+                selectedValue = state.value.subjects.joinToString(", "),
+                onValueSelected = { viewModel.onEvent(TeacherRegistrationEvent.SubjectsChanged(it.toString())) },
+                isCompulsory = true,
+//            error = state.genderError?.let { stringResource(id = it) },
+                isSearchable = true // Enable search functionality
+            )
+            /* var expanded by remember { mutableStateOf(false) }
+
+             ExposedDropdownMenuBox(
+                 expanded = expanded,
+                 onExpandedChange = { expanded = !expanded }
+             ) {
+                 OutlinedTextField(
+                     value = state.value.subjects.joinToString(", "),
+                     onValueChange = {},
+                     label = { Text("Subjects") },
+                     modifier = Modifier.fillMaxWidth(),
+                     readOnly = true,
+                     trailingIcon = {
+                         ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                     }
+                 )
+
+                 ExposedDropdownMenu(
+                     expanded = expanded,
+                     onDismissRequest = { expanded = false }
+                 ) {
+                     subjects.forEach { subject ->
+                         DropdownMenuItem(
+                             text = {
+                                 Text(text = subject)
+                             },
+                             onClick = {
+                                 viewModel.onEvent(TeacherRegistrationEvent.SubjectsChanged(subject))
+                             },
+                             modifier = Modifier.background(color = Color.Red)
+                         )
+                     }
+                 }
+             }*/
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Verify Button
+            // Register Button
             Button(
-                onClick = { viewModel.onEvent(TeacherRegistrationEvent.VerifyOtp) },
+                onClick = { viewModel.onEvent(TeacherRegistrationEvent.Register(activity!!)) },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Verify OTP")
+                Text("Register")
             }
         }
 

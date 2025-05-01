@@ -170,7 +170,7 @@ fun CourseCard(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "€${course.price}",
+                        text = "₦${course.price}",
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold
                     )

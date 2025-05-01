@@ -134,6 +134,7 @@ fun StudentWalletScreen(
                         .clickable { viewModel.onEvent(WalletEvent.OnTransactionClick(transaction)) },
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
+                    val amountColor = if (transaction.transactionType == "credit") Color.Green else Color.Red
                     Column(Modifier.padding(12.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -147,17 +148,16 @@ fun StudentWalletScreen(
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             Text(
-                                text = transaction.transactionType.capitalize(),
+                                text = transaction.transactionType.capitalize(), color = amountColor,
                             )
                         }
                         Spacer(modifier = Modifier.height(4.dp))
-                        Row(
+                        Column(
                             modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(transaction.description)
+                            Text(transaction.description, style = MaterialTheme.typography.bodyMedium)
                             Spacer(modifier = Modifier.weight(1f))
-                            val amountColor = if (transaction.transactionType == "credit") Color.Green else Color.Red
+
                             val prefix = if (transaction.transactionType == "credit") "+" else "-"
                             Text(
                                 text = "$prefix₦${transaction.amount}",

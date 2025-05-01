@@ -25,11 +25,12 @@ object Constants {
     )
 
     val grades = listOf(
-        "Grade 1" to "Grade 1",
-        "Grade 2" to "Grade 2",
-        "Grade 3" to "Grade 3",
-        "Grade 4" to "Grade 4",
-        "Grade 5" to "Grade 5"
+        "JSS 1" to "Grade 1",
+        "JSS 2" to "Grade 2",
+        "JSS 3" to "Grade 3",
+        "SSS 1" to "Grade 4",
+        "SSS 2" to "Grade 5",
+        "SSS 3" to "Grade 6"
     )
 
     const val ZOOM_LINK = "https://us05web.zoom.us/j/82359282385?pwd=HKCt8mN2C76tgThVkYLceoXee0NF8n.1"

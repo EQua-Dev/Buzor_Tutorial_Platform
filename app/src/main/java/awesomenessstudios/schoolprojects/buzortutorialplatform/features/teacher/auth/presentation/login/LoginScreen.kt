@@ -73,6 +73,8 @@ fun LoginScreen(
                 style = MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.Center,
             )
+
+            Spacer(modifier = Modifier.height(64.dp))
             // Email Field
             OutlinedTextField(
                 value = state.email,
@@ -121,7 +123,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             // Forgot Password Link
-            TextButton(onClick = onForgotPasswordClicked) {
+            TextButton(onClick = onForgotPasswordClicked, modifier = Modifier.align(Alignment.End)) {
                 Text("Forgot Password?")
             }
 
@@ -129,7 +131,7 @@ fun LoginScreen(
 
             // Forgot Password Link
             TextButton(onClick = { onRegisterClicked(state.userRole!!) }) {
-                Text("Create Account")
+                Text("New Here? Create Account")
             }
 
             // Loading and Error Handling

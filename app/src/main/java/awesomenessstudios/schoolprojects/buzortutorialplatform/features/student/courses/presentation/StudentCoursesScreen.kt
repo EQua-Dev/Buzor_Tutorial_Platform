@@ -199,7 +199,7 @@ private fun CourseItem(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Price: ${course.price}",
+                text = "Price: ₦${course.price}",
                 style = MaterialTheme.typography.bodyLarge
             )
         }
@@ -247,7 +247,7 @@ fun CourseCard(course: Course, navController: NavHostController) {
 
             // Price
             Text(
-                text = "Price: ${course.price}",
+                text = "Price: ₦${course.price}",
                 style = MaterialTheme.typography.bodyLarge
             )
 

@@ -7,19 +7,23 @@
 package awesomenessstudios.schoolprojects.buzortutorialplatform.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.House
+import androidx.compose.material.icons.filled.LibraryBooks
 import androidx.compose.material.icons.filled.MarkChatUnread
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.VideoCall
 import androidx.compose.material.icons.filled.VolunteerActivism
+import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.ui.graphics.vector.ImageVector
 
 data class BottomNavigationScreen(
@@ -36,9 +40,9 @@ sealed class StudentBottomBarScreen(
     val route: String
 ){
     object Sessions : StudentBottomBarScreen("Sessions", Icons.Default.VideoCall, "student_sessions",)
-    object Courses : StudentBottomBarScreen("Courses", Icons.Default.Payments, "student_courses",)
-    object Wallet : StudentBottomBarScreen("Wallet", Icons.Default.VolunteerActivism, "student_wallet",)
-    object Profile : StudentBottomBarScreen("Profile", Icons.Default.Gavel, "student_profile",)
+    object Courses : StudentBottomBarScreen("Courses", Icons.Default.LibraryBooks, "student_courses",)
+    object Wallet : StudentBottomBarScreen("Wallet", Icons.Default.AccountBalanceWallet, "student_wallet",)
+    object Profile : StudentBottomBarScreen("Profile", Icons.Default.School, "student_profile",)
 
 
 }

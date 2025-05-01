@@ -101,9 +101,9 @@ fun StudentSessionScreen(
                     Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }) {
                         Text("Available")
                     }
-                    Tab(selected = selectedTab == 2, onClick = { selectedTab = 2 }) {
+                    /*Tab(selected = selectedTab == 2, onClick = { selectedTab = 2 }) {
                         Text("Requests")
-                    }
+                    }*/
                 }
 
                 when (selectedTab) {

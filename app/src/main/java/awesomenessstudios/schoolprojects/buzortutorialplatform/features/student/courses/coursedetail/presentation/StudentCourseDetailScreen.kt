@@ -30,6 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.Result
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.payments.fundwallet.presentation.WithdrawBottomSheet
+import awesomenessstudios.schoolprojects.buzortutorialplatform.ui.theme.Typography
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.internal.managers.FragmentComponentManager.findActivity
@@ -89,6 +90,7 @@ fun StudentCourseDetailScreen(
 
             Text(
                 text = it.description,
+                style = Typography.bodyMedium,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
 

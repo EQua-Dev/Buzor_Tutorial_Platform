@@ -27,10 +27,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import awesomenessstudios.schoolprojects.buzortutorialplatform.R
 import awesomenessstudios.schoolprojects.buzortutorialplatform.navigation.Screen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.navigation.StudentBottomBar
 import awesomenessstudios.schoolprojects.buzortutorialplatform.navigation.StudentBottomNavigationGraph
@@ -82,10 +85,17 @@ fun StudentHomeScreen(
                     Text("Hello, Student")
                 },
                 actions = {
-                    Text("Logout", modifier = Modifier.clickable {
-                        baseNavHostController.navigate(Screen.InitRoleTypeScreen.route)
-//                        onLogout()
-                    })
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_logout), // Replace with your actual drawable name
+                        contentDescription = "Logout",
+                        modifier = Modifier
+                            .clickable {
+                                baseNavHostController.navigate(Screen.InitRoleTypeScreen.route)
+                                // onLogout() // Uncomment if needed
+                            }
+                            .size(24.dp), // You can adjust the size as needed
+                        tint = Color.Unspecified // Use Unspecified if you want the original icon color
+                    )
                     /* DropdownMenu(
                          expanded = false*//* State for menu visibility *//*,
                 onDismissRequest = { *//* Close menu *//* }
