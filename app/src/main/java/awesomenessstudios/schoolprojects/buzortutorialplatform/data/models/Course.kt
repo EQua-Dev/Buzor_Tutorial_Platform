@@ -12,6 +12,7 @@ data class Course(
     val allowPrivateSessions: Boolean = true,
     val privateSessionPrice: String = "",
     val rating: Double = 0.0,
+    val raters: Map<String, Int> = emptyMap(), // NEW: userId to rating (1–5)
     val courseNoteOneTitle: String = "",
     val courseNoteOne: String = "",
     val courseNoteOneFootnote: String = "",

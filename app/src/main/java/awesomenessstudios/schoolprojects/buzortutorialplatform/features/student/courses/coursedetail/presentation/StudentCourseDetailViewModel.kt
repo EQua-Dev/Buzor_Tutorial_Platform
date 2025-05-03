@@ -320,6 +320,39 @@ class StudentCourseDetailViewModel @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)
+    fun rateCourse(courseId: String, userId: String, rating: Int, activity: FragmentActivity, courseTitle: String) {
+        HelpMe.promptBiometric(
+            activity = activity,
+            title = "Confirm rating $courseTitle $rating stars",
+            onSuccess = {
+                viewModelScope.launch {
+                    val result = courseRepository.rateCourse(courseId, userId, rating)
+                    if (result.isSuccess) {
+                        // Optionally trigger UI state update or refresh course data
+                        Log.d("CourseViewModel", "Rating submitted successfully.")
+                    } else {
+                        Log.e("CourseViewModel", "Failed to rate course", result.exceptionOrNull())
+                    }
+                }
+            },
+            onNoHardware = {
+                viewModelScope.launch {
+                    val result = courseRepository.rateCourse(courseId, userId, rating)
+                    if (result.isSuccess) {
+                        // Optionally trigger UI state update or refresh course data
+                        Log.d("CourseViewModel", "Rating submitted successfully.")
+                    } else {
+                        Log.e("CourseViewModel", "Failed to rate course", result.exceptionOrNull())
+                    }
+                }
+            }
+        )
+
+
+    }
+
+
 
     fun dismissFundingDialog() {
         showFundingDialog = false

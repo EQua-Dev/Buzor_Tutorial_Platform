@@ -63,5 +63,31 @@ class CourseRepositoryImpl @Inject constructor(
     } catch (e: Exception) {
         Result.failure(e)
     }
+    override suspend fun rateCourse(courseId: String, userId: String, newRating: Int): Result<Unit> = try {
+        val docRef = firestore.collection(COURSES_REF).document(courseId)
+
+        firestore.runTransaction { transaction ->
+            val snapshot = transaction.get(docRef)
+            val raters = snapshot.get("raters") as? Map<String, Long> ?: emptyMap()
+
+            // Update the user's rating
+            val updatedRaters = raters.toMutableMap().apply {
+                put(userId, newRating.toLong())
+            }
+
+            // Calculate the average
+            val averageRating = updatedRaters.values.map { it.toDouble() }.average()
+
+            // Push the updates
+            transaction.update(docRef, mapOf(
+                "raters" to updatedRaters,
+                "rating" to averageRating
+            ))
+        }.await()
+
+        Result.success(Unit)
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
 
 }

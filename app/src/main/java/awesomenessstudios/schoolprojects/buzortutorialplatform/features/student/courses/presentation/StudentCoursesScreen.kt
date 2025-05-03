@@ -11,18 +11,24 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,8 +41,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.Course
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.sessions.presentation.AvailableSessionsTab
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.sessions.presentation.MySessionsTab
 import awesomenessstudios.schoolprojects.buzortutorialplatform.navigation.Screen
 import coil.compose.AsyncImage
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,6 +58,11 @@ fun StudentCoursesScreen(
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
 
+    var selectedTab by remember { mutableStateOf(0) }
+    val tabs = listOf("Available Courses", "My Courses")
+    val studentUid = FirebaseAuth.getInstance().currentUser!!.uid
+
+
     LaunchedEffect(Unit) {
         viewModel.onEvent(StudentCoursesEvent.LoadStudentData)
     }
@@ -56,43 +71,99 @@ fun StudentCoursesScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text("Available Courses") }
+                title = { Text("Courses") }
             )
         }
     ) { padding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
+        Column(modifier = Modifier.padding(padding)) {
+            TabRow(selectedTabIndex = selectedTab) {
+
+                Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }) {
+                    Text("Available Courses")
+                }
+                Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }) {
+                    Text("My Courses")
+                }
+            }
             when {
                 state.isLoading -> {
-                    LoadingIndicator()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                    ) {
+                        LoadingIndicator()
+                    }
                 }
+
                 state.error != null -> {
-                    ErrorState(
-                        message = state.error!!,
-                        onRetry = { viewModel.onEvent(StudentCoursesEvent.LoadStudentData) }
-                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                    ) {
+                        ErrorState(
+                            message = state.error!!,
+                            onRetry = { viewModel.onEvent(StudentCoursesEvent.LoadStudentData) }
+                        )
+                    }
                 }
+
                 state.courses.isEmpty() -> {
-                    EmptyState(grade = state.studentGrade)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                    ) {
+                        EmptyState(grade = state.studentGrade)
+                    }
                 }
+
                 else -> {
-                    CoursesList(
-                        courses = state.courses,
-                        onCourseClick = { courseId ->
-                            navController.navigate(
-                                Screen.StudentCourseDetailScreen.route.replace(
-                                    "{courseId}",
-                                    courseId
+
+
+                        when (selectedTab) {
+                            0 -> {
+                                val availableCourses = state.courses.filterNot { course ->
+                                    course.enrolledStudents.contains(studentUid)
+                                }
+                                CoursesList(
+                                    courses = availableCourses,
+                                    onCourseClick = { courseId ->
+                                        navController.navigate(
+                                            Screen.StudentCourseDetailScreen.route.replace(
+                                                "{courseId}",
+                                                courseId
+                                            )
+                                        )
+                                    }
                                 )
-                            )
+                            }
+
+                            1 -> {
+                                val myCourses = state.courses.filter { course ->
+                                    course.enrolledStudents.contains(studentUid)
+                                }
+                                CoursesList(
+                                    courses = myCourses,
+                                    onCourseClick = { courseId ->
+                                        navController.navigate(
+                                            Screen.StudentCourseDetailScreen.route.replace(
+                                                "{courseId}",
+                                                courseId
+                                            )
+                                        )
+                                    }
+                                )
+                            }
                         }
-                    )
+
+
                 }
             }
         }
+
+
     }
 }
 
@@ -254,14 +325,14 @@ fun CourseCard(course: Course, navController: NavHostController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             // View Details Button
-          /*  Button(
-                onClick = {
-                    navController.navigate("course_details/${course.id}")
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("View Course Details")
-            }*/
+            /*  Button(
+                  onClick = {
+                      navController.navigate("course_details/${course.id}")
+                  },
+                  modifier = Modifier.fillMaxWidth()
+              ) {
+                  Text("View Course Details")
+              }*/
         }
     }
 }

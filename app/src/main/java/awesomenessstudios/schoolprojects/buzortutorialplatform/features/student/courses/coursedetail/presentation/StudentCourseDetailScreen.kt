@@ -66,8 +66,10 @@ fun StudentCourseDetailScreen(
     }
 
     course?.let {
-        Column(modifier = Modifier.fillMaxSize()
-            .verticalScroll(rememberScrollState())
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
             AsyncImage(
                 model = it.coverImage,
@@ -153,6 +155,23 @@ fun StudentCourseDetailScreen(
                                 }
                             )
                         }
+                    }, onRateTriggered = {
+                        scope.launch {
+                            activity?.let { fragmentActivity ->
+                                viewModel.rateCourse(
+                                    course.id,
+                                    currentUserId!!,
+                                    it,
+                                    fragmentActivity,
+                                    course.title
+                                )
+                            } ?: run {
+                                // Handle case where activity isn't available
+                                // Maybe show error or use alternative authentication
+                            }
+
+                        }
+
                     })
 
                 "Sessions" -> CourseSessionsView(course = it)
