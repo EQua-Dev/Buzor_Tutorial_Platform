@@ -21,4 +21,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "Buzor Tutorial Platform"
 include(":app")
-include(":SourceAuth")

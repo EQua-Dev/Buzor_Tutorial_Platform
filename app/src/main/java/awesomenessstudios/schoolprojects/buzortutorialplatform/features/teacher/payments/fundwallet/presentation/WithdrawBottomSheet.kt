@@ -38,6 +38,7 @@ import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun WithdrawBottomSheet(
+    title: String = "Fund Your Wallet",
     wallet: Wallet,
     viewModel: WithdrawViewModel = hiltViewModel(),
     onClose: () -> Unit,
@@ -66,7 +67,7 @@ fun WithdrawBottomSheet(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    "Fund Your Wallet",
+                    title,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
@@ -110,7 +111,7 @@ fun WithdrawBottomSheet(
                 Button(
                     onClick = {
                         activity?.let { fragmentActivity ->
-                            viewModel.verifyAndFund(
+                            viewModel.verifyAndWithdraw(
                                 activity = fragmentActivity,
                                 wallet = wallet,
                                 onSuccess = onSuccess,

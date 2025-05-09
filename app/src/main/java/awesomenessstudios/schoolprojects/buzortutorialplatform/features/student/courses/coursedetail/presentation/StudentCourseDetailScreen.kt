@@ -2,6 +2,10 @@ package awesomenessstudios.schoolprojects.buzortutorialplatform.features.student
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,16 +16,28 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.rounded.Book
+import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -37,6 +53,7 @@ import dagger.hilt.android.internal.managers.FragmentComponentManager.findActivi
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.P)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudentCourseDetailScreen(
     modifier: Modifier = Modifier,
@@ -45,176 +62,181 @@ fun StudentCourseDetailScreen(
     viewModel: StudentCourseDetailViewModel = hiltViewModel()
 ) {
 
+    LaunchedEffect (Unit){
+        viewModel.loadCourse(courseId)
+    }
     val context = LocalContext.current
     val activity = remember(context) {
         findActivity(context)
             ?.takeIf { it is FragmentActivity } as? FragmentActivity
     }
 
-    val course = viewModel.courseState
-    val teacher = viewModel.teacherState
-    val selectedTab = viewModel.selectedTab
+    val course by viewModel.courseState.collectAsState()
+    val teacher by viewModel.teacherState.collectAsState()
+    val selectedTab by viewModel.selectedTab.collectAsState()
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
-    val showFundingDialog = viewModel.showFundingDialog
+    val showFundingDialog by viewModel.showFundingDialog.collectAsState()
 
     val scope = rememberCoroutineScope()
 
-
-
-    LaunchedEffect(courseId) {
-        viewModel.loadCourse(courseId)
-    }
-
-    course?.let {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(course?.title ?: "Course Details") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        AnimatedVisibility(
+            visible = course != null,
+            enter = fadeIn(),
+            exit = fadeOut()
         ) {
-            AsyncImage(
-                model = it.coverImage,
-                contentDescription = null,
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-                contentScale = ContentScale.Crop
-            )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState())
             ) {
-                Text(text = it.title, style = MaterialTheme.typography.titleMedium)
-                Text(text = "₦${it.price}", style = MaterialTheme.typography.titleMedium)
-            }
-
-            Text(
-                text = it.description,
-                style = Typography.bodyMedium,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-            )
-
-            teacher?.let {
-                Text(
-                    text = "Teacher: ${it.firstName} ${it.lastName}",
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            }
-
-            Row(
-                modifier = Modifier.padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                listOf("Content", "Sessions").forEach { tab ->
-                    FilterChip(
-                        selected = selectedTab == tab,
-                        onClick = { viewModel.onTabSelected(tab) },
-                        label = { Text(tab) }
+                course?.let {
+                    AsyncImage(
+                        model = it.coverImage,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .clip(MaterialTheme.shapes.medium),
+                        contentScale = ContentScale.Crop
                     )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = it.title, style = MaterialTheme.typography.headlineSmall)
+                        Text(text = "₦${it.price}", style = MaterialTheme.typography.headlineSmall)
+                    }
+
+                    Text(
+                        text = it.description,
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+
+                    teacher?.let { teacherInfo ->
+                        Text(
+                            text = "Teacher: ${teacherInfo.firstName} ${teacherInfo.lastName}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        FilterChip(
+                            selected = selectedTab == "Content",
+                            onClick = { viewModel.onTabSelected("Content") },
+                            label = { Text("Content") },
+                            leadingIcon = { Icon(Icons.Rounded.Book, contentDescription = "Content") }
+                        )
+                        FilterChip(
+                            selected = selectedTab == "Sessions",
+                            onClick = { viewModel.onTabSelected("Sessions") },
+                            label = { Text("Sessions") },
+                            leadingIcon = { Icon(Icons.Rounded.Event, contentDescription = "Sessions") }
+                        )
+                    }
+
+                    Crossfade(targetState = selectedTab, label = "tabContent") { tab ->
+                        when (tab) {
+                            "Content" -> course?.let { contentCourse ->
+                                CourseContentView(
+                                    course = contentCourse,
+                                    currentUserId = currentUserId,
+                                    navController = navController,
+                                    onTriggerEnroll = {
+                                        currentUserId?.let { userId ->
+                                            viewModel.checkWalletAndProceed(
+                                                userId = userId,
+                                                onSufficientFunds = {
+                                                    scope.launch {
+                                                        activity?.let { fragmentActivity ->
+                                                            viewModel.enrollInCourse(fragmentActivity, userId)
+                                                        }
+                                                    }
+                                                },
+                                                amount = null, // Price is in the course object
+                                                onInsufficientFunds = { viewModel.onSetShowFundingDialog(true) }
+                                            )
+                                        }
+                                    },
+                                    onRateTriggered = { rating ->
+                                        currentUserId?.let { userId ->
+                                            scope.launch {
+                                                activity?.let { fragmentActivity ->
+                                                    viewModel.rateCourse(
+                                                        contentCourse.id,
+                                                        userId,
+                                                        rating,
+                                                        fragmentActivity,
+                                                        contentCourse.title
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                )
+                            }
+
+                            "Sessions" -> course?.let { sessionsCourse ->
+                                CourseSessionsView(course = sessionsCourse, viewModel = viewModel)
+                            }
+                        }
+                    }
                 }
             }
+        } ?: Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
 
-            when (selectedTab) {
-                "Content" -> CourseContentView(
-                    course = it,
-                    currentUserId = currentUserId,
-                    navController = navController,
-                    onTriggerEnroll = {
-                        if (currentUserId != null) {
+        if (showFundingDialog) {
+            viewModel.walletState.collectAsState().value?.let { wallet ->
+                WithdrawBottomSheet(
+                    wallet = wallet,
+                    onSuccess = {
+                        viewModel.dismissFundingDialog()
+                        currentUserId?.let { userId ->
                             viewModel.checkWalletAndProceed(
-                                userId = currentUserId,
+                                userId = userId,
                                 onSufficientFunds = {
                                     scope.launch {
                                         activity?.let { fragmentActivity ->
-                                            when (val result = viewModel.enrollInCourse(
-                                                fragmentActivity,
-                                                currentUserId
-                                            )) {
-                                                is Result.Success -> {
-                                                    // Handle success (e.g., show message)
-                                                }
-
-                                                is Result.Failure -> {
-                                                    // Handle error (e.g., show error message)
-                                                }
-                                            }
-                                        } ?: run {
-                                            // Handle case where activity isn't available
-                                            // Maybe show error or use alternative authentication
+                                            viewModel.enrollInCourse(fragmentActivity, userId)
                                         }
-
                                     }
                                 },
                                 amount = null,
-                                onInsufficientFunds = {
-                                    // Dialog state is handled in viewModel
-
-
-                                }
+                                onInsufficientFunds = { /* Won't be triggered again */ }
                             )
                         }
-                    }, onRateTriggered = {
-                        scope.launch {
-                            activity?.let { fragmentActivity ->
-                                viewModel.rateCourse(
-                                    course.id,
-                                    currentUserId!!,
-                                    it,
-                                    fragmentActivity,
-                                    course.title
-                                )
-                            } ?: run {
-                                // Handle case where activity isn't available
-                                // Maybe show error or use alternative authentication
-                            }
-
-                        }
-
-                    })
-
-                "Sessions" -> CourseSessionsView(course = it)
-            }
-        }
-        if (showFundingDialog) {
-            viewModel.walletState?.let { it1 ->
-                WithdrawBottomSheet(
-                    wallet = it1,
-                    onSuccess = {
-                        viewModel.dismissFundingDialog()
-                        currentUserId?.let {
-                            viewModel.checkWalletAndProceed(
-                                userId = it,
-                                onSufficientFunds = {
-                                    scope.launch {
-                                        activity?.let { fragmentActivity ->
-                                            when (val result = viewModel.enrollInCourse(
-                                                fragmentActivity,
-                                                currentUserId
-                                            )) {
-                                                is Result.Success -> {
-                                                    // Handle success (e.g., show message)
-                                                }
-
-                                                is Result.Failure -> {
-                                                    // Handle error (e.g., show error message)
-                                                }
-                                            }
-                                        } ?: run {
-                                            // Handle case where activity isn't available
-                                            // Maybe show error or use alternative authentication
-                                        }
-                                    }
-                                }, amount = null,
-                                onInsufficientFunds = { /* this won't be triggered again here */ }
-                            )
-                        }
-                    }, onClose = ({ viewModel.dismissFundingDialog() })
+                    },
+                    onClose = { viewModel.dismissFundingDialog() }
                 )
             }
         }
-    } ?: Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator()
     }
 }

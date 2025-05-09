@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+
 @HiltViewModel
 class TeacherRegistrationViewModel @Inject constructor(private val userPreferences: UserPreferences) :
     ViewModel() {
@@ -69,12 +70,12 @@ class TeacherRegistrationViewModel @Inject constructor(private val userPreferenc
                 _state.value = _state.value.copy(otp = event.otp)
             }
 
-            is TeacherRegistrationEvent.OtpSent -> {
-                _state.value = _state.value.copy(sentOtp = event.otp)
-            }
-
             TeacherRegistrationEvent.VerifyOtp -> {
                 verifyOtp()
+            }
+
+            TeacherRegistrationEvent.DismissError -> {
+                _state.value = _state.value.copy(errorMessage = null)
             }
         }
     }
@@ -91,41 +92,13 @@ class TeacherRegistrationViewModel @Inject constructor(private val userPreferenc
                     val userId = mAuth.currentUser?.uid ?: ""
                     teacherId = userId
                     _state.value = _state.value.copy(newUserId = userId)
-                    saveTeacherDetails(userId, activity)
+                    sendOtp(_state.value.phoneNumber, activity, userId) // Send OTP immediately after account creation
                 } else {
                     _state.value = _state.value.copy(
                         isLoading = false,
                         errorMessage = task.exception?.message ?: "Registration failed"
                     )
                 }
-            }
-    }
-
-    private fun saveTeacherDetails(userId: String, activity: Activity) {
-        val teacher = Teacher(
-            id = userId,
-            firstName = _state.value.firstName,
-            lastName = _state.value.lastName,
-            subjects = _state.value.subjects,
-            email = _state.value.email,
-            phoneNumber = _state.value.phoneNumber,
-            isVerified = false // Initially set to false
-        )
-
-        teachersCollectionRef.document(userId)
-            .set(teacher)
-            .addOnSuccessListener {
-                _state.value = _state.value.copy(
-                    isLoading = false,
-//                    isRegistrationSuccessful = true
-                )
-                sendOtp(teacher.phoneNumber, activity, userId)
-            }
-            .addOnFailureListener { e ->
-                _state.value = _state.value.copy(
-                    isLoading = false,
-                    errorMessage = e.message ?: "Failed to save teacher details"
-                )
             }
     }
 
@@ -138,11 +111,11 @@ class TeacherRegistrationViewModel @Inject constructor(private val userPreferenc
             .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
                 override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                     // Auto-verification (e.g., SMS retriever)
-//                    signInWithPhoneAuthCredential(credential)
                     val otp = credential.smsCode // Get the OTP from the credential
                     Log.d("TAG", "onVerificationCompleted: ${credential.smsCode}")
                     if (otp != null) {
-                        onEvent(TeacherRegistrationEvent.OtpSent(otp)) // Store the sent OTP
+                        _state.value = _state.value.copy(otp = otp) // Directly set OTP for auto-verification
+                        verifyOtpWithCredential(credential, userId)
                     }
                 }
 
@@ -171,29 +144,21 @@ class TeacherRegistrationViewModel @Inject constructor(private val userPreferenc
 
     private fun verifyOtp() {
         val enteredOtp = _state.value.otp
-        val sentOtp = _state.value.sentOtp
-        if (enteredOtp.length != 6) {
+        if (verificationId.isNullOrEmpty() || enteredOtp.length != 6) {
             _state.value = _state.value.copy(errorMessage = "Invalid OTP")
             return
         }
 
         _state.value = _state.value.copy(isLoading = true, errorMessage = null)
-
-        /*  if (enteredOtp == sentOtp) {
-              // OTP verification successful
-              updateVerificationStatus()
-          } else {
-              // OTP verification failed
-              _state.value = _state.value.copy(
-                  isLoading = false,
-                  errorMessage = "Incorrect OTP"
-              )
-          }*/
         val credential = PhoneAuthProvider.getCredential(verificationId!!, enteredOtp)
+        signInWithPhoneAuthCredential(credential, _state.value.newUserId)
+    }
+
+    private fun verifyOtpWithCredential(credential: PhoneAuthCredential, userId: String) {
         mAuth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    updateVerificationStatus()
+                    saveTeacherDetails(userId) // Save details after successful phone auth
                 } else {
                     _state.value = _state.value.copy(
                         isLoading = false,
@@ -203,25 +168,47 @@ class TeacherRegistrationViewModel @Inject constructor(private val userPreferenc
             }
     }
 
-    private fun updateVerificationStatus() {
-        val userId = _state.value.newUserId
-        viewModelScope.launch {
-            userPreferences.saveUserId(userId)
-        }
+    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential, userId: String) {
+        mAuth.signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Phone number verification successful, now save teacher details
+                    saveTeacherDetails(userId)
+                } else {
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        errorMessage = task.exception?.message ?: "OTP verification failed"
+                    )
+                }
+            }
+    }
+
+    private fun saveTeacherDetails(userId: String) {
+        val teacher = Teacher(
+            id = userId,
+            firstName = _state.value.firstName,
+            lastName = _state.value.lastName,
+            subjects = _state.value.subjects,
+            email = _state.value.email,
+            phoneNumber = _state.value.phoneNumber,
+            isVerified = true // Set to true after successful OTP verification
+        )
 
         teachersCollectionRef.document(userId)
-            .update("isVerified", true)
+            .set(teacher)
             .addOnSuccessListener {
                 _state.value = _state.value.copy(
                     isLoading = false,
-                    isVerificationSuccessful = true,
                     isRegistrationSuccessful = true
                 )
+                viewModelScope.launch {
+                    userPreferences.saveUserId(userId)
+                }
             }
             .addOnFailureListener { e ->
                 _state.value = _state.value.copy(
                     isLoading = false,
-                    errorMessage = e.message ?: "Failed to update verification status"
+                    errorMessage = e.message ?: "Failed to save teacher details"
                 )
             }
     }

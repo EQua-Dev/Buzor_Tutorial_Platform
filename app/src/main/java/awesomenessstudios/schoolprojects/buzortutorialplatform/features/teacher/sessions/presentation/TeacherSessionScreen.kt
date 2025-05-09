@@ -83,8 +83,8 @@ fun TeacherSessionScreen(
                         singleSessions = state.singleSessions,
                         courseTitles = state.courseTitles,
                         onOpenSession = { link, show ->
-                            sessionLink.value = link // 🔥 Save the link
-                            showWebView.value = show // 🔥 Trigger WebView
+                            sessionLink.value = link
+                            showWebView.value = show
                         }
                     )
 

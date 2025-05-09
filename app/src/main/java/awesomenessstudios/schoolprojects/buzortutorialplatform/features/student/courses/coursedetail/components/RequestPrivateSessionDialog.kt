@@ -12,9 +12,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -35,8 +40,10 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RequestPrivateSessionDialog(
     data: NewSingleSessionData,
@@ -44,102 +51,66 @@ fun RequestPrivateSessionDialog(
     onConfirm: () -> Unit,
     onValueChange: (NewSingleSessionData) -> Unit
 ) {
-
     var showPicker by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
     var selectedTime by remember { mutableStateOf<LocalTime?>(null) }
 
-
-    Dialog(onDismissRequest = { onDismiss() }) {
-        Card(
-            modifier = Modifier.padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-        ) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Request Private Session") },
+        text = {
             Column(
-                modifier = Modifier
-                    .padding(24.dp)
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text("Request Private Session", style = MaterialTheme.typography.titleMedium)
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Date and Time Picker
                 Button(
                     onClick = { showPicker = true },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp)
                 ) {
+                    Icon(Icons.Rounded.CalendarMonth, contentDescription = "Date Time Picker")
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text("Select Session Date and Time")
                 }
-           /* OutlinedTextField(
-                    value = getDate(data.startTime.toLong() ?: System.currentTimeMillis().toLong(), "EEE, dd MMM yyyy | hh:mm a"),
-                    onValueChange = { onValueChange(data.copy(startTime = it)) },
-                    label = { Text("Start Time") },
-                    modifier = Modifier.fillMaxWidth().clickable { showPicker = true }
-                )*/
-                DateTimePickerDialog(
-                    show = showPicker,
-                    onDismiss = { showPicker = false },
-                    onDateTimeSelected = { date, time ->
-                        selectedDate = date
-                        selectedTime = time
+
+                if (selectedDate != null && selectedTime != null) {
+                    val formattedDateTime = remember(selectedDate, selectedTime) {
+                        "${selectedDate?.format(DateTimeFormatter.ISO_DATE)} at ${selectedTime?.format(DateTimeFormatter.ofPattern("hh:mm a", Locale.getDefault()))}"
                     }
-                )
-
-                selectedDate?.let { date ->
-                    selectedTime?.let { time ->
-                        val millis = date
-                            .atTime(time)
-                            .atZone(ZoneId.systemDefault())
-                            .toInstant()
-                            .toEpochMilli()
-
-                        onValueChange(data.copy(startTime = millis.toString()))
-                        Text(
-                            "Selected: ${date.format(DateTimeFormatter.ISO_DATE)} at ${
-                                time.format(
-                                    DateTimeFormatter.ofPattern("hh:mm a")
-                                )
-                            }"
-                        )
-                    }
-                }
-
-
-                /*     Spacer(modifier = Modifier.height(8.dp))
-
-                     OutlinedTextField(
-                         value = data.type,
-                         onValueChange = { onValueChange(data.copy(type = it)) },
-                         label = { Text("Session Type") },
-                         modifier = Modifier.fillMaxWidth()
-                     )
-
-                     Spacer(modifier = Modifier.height(8.dp))
-
-                     OutlinedTextField(
-                         value = data.price,
-                         onValueChange = { onValueChange(data.copy(price = it)) },
-                         label = { Text("Price (€)") },
-                         modifier = Modifier.fillMaxWidth()
-                     )
-     */
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Row(
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    TextButton(onClick = { onDismiss() }) {
-                        Text("Cancel")
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(onClick = { onConfirm() }) {
-                        Text("Confirm")
-                    }
+                    Text("Selected: $formattedDateTime", style = MaterialTheme.typography.bodyMedium)
                 }
             }
+        },
+        confirmButton = {
+            Button(
+                onClick = onConfirm,
+                enabled = data.startTime.isNotBlank(),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text("Confirm")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
         }
+    )
+
+    if (showPicker) {
+        DateTimePickerDialog(
+            show = showPicker,
+            onDismiss = { showPicker = false },
+            onDateTimeSelected = { date, time ->
+                selectedDate = date
+                selectedTime = time
+                val millis = date
+                    .atTime(time)
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli()
+                onValueChange(data.copy(startTime = millis.toString()))
+            }
+        )
     }
 }

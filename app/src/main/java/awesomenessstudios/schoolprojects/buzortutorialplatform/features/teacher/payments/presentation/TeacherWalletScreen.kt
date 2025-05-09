@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.payments.fundwallet.presentation.WithdrawBottomSheet
+import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.getDate
 import com.google.firebase.auth.FirebaseAuth
 
 @RequiresApi(Build.VERSION_CODES.P)
@@ -124,23 +125,34 @@ fun TeacherPaymentsScreen(
                         .clickable { viewModel.onEvent(TeacherPaymentsEvent.OnTransactionClick(transaction)) },
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
-                    Column(Modifier.padding(12.dp)) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        // Top Row: Date and Transaction Type
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(text = transaction.dateCreated)
-                            Text(text = transaction.transactionType.capitalize())
+                            Text(
+                                text = getDate(transaction.dateCreated.toLong(), "EEE dd/MM/yyyy | hh:mm a")
+                            )
+
+                            val typeColor = if (transaction.transactionType.lowercase() == "credit") Color.Green else Color.Red
+                            Text(
+                                text = transaction.transactionType.replaceFirstChar { it.uppercase() },
+                                color = typeColor,
+                                fontWeight = FontWeight.SemiBold
+                            )
                         }
+
                         Spacer(modifier = Modifier.height(4.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+
+                        // Column for description and amount
+                        Column(
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(transaction.description)
-                            val amountColor =
-                                if (transaction.transactionType == "credit") Color.Green else Color.Red
-                            val prefix = if (transaction.transactionType == "credit") "+" else "-"
+                            Text(text = transaction.description)
+
+                            val amountColor = if (transaction.transactionType.lowercase() == "credit") Color.Green else Color.Red
+                            val prefix = if (transaction.transactionType.lowercase() == "credit") "+" else "-"
                             Text(
                                 text = "$prefix₦${transaction.amount}",
                                 color = amountColor,
@@ -148,6 +160,7 @@ fun TeacherPaymentsScreen(
                             )
                         }
                     }
+
                 }
             }
         }
@@ -170,7 +183,8 @@ fun TeacherPaymentsScreen(
                     Text("Sender: ${transaction.sender}")
                     Text("Receiver: ${transaction.receiver}")
                     Text("Location: ${transaction.transactionLocation}")
-                    Text("Date: ${transaction.dateCreated}")
+                    Text("Date: ${getDate(transaction.dateCreated.toLong(), "EEE, dd MMM yyyy") }")
+                    Text("Time: ${getDate(transaction.dateCreated.toLong(), "hh: mm a") }")
                 }
             }
         )
@@ -179,6 +193,7 @@ fun TeacherPaymentsScreen(
         state.walletState?.let { it1 ->
 
             WithdrawBottomSheet(
+                title = "Withdraw Funds",
                 wallet = it1,
                 onSuccess = {
                     viewModel.dismissFundingDialog()

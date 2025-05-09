@@ -5,16 +5,26 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import awesomenessstudios.schoolprojects.buzortutorialplatform.R
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -29,27 +39,28 @@ import kotlin.math.abs
 fun Context.toast(message: String) =
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 
-
 @Composable
-fun LoadingDialog(modifier: Modifier = Modifier) {
-
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.2f)), // 50% opacity
-        contentAlignment = Alignment.Center
+fun LoadingDialog(modifier: Modifier = Modifier, loadingText: String = "Loading...") {
+    Dialog(
+        onDismissRequest = { /* Disable dismiss on outside touch if needed */ },
+        properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
     ) {
-
-        LottieAnimation(
-            composition = composition,
-            iterations = LottieConstants.IterateForever, modifier = Modifier
-                .width(150.dp)
-                .height(150.dp)
-        )
+        Card(
+            modifier = Modifier.padding(16.dp),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                Text(loadingText, style = MaterialTheme.typography.bodyMedium)
+            }
+        }
     }
 }
+
 
 
 fun openWhatsapp(phoneNumber: String, context: Context) {

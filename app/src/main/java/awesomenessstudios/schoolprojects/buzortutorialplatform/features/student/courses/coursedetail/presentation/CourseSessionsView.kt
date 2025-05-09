@@ -22,15 +22,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.rounded.EventNote
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -54,11 +58,10 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.internal.managers.FragmentComponentManager.findActivity
 import kotlinx.coroutines.launch
 
-
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun CourseSessionsView(course: Course, viewModel: StudentCourseDetailViewModel = hiltViewModel()) {
-    val sessions = viewModel.groupSessionsState
+    val sessions by viewModel.groupSessionsState.collectAsState()
     val auth = FirebaseAuth.getInstance()
 
     val context = LocalContext.current
@@ -69,136 +72,128 @@ fun CourseSessionsView(course: Course, viewModel: StudentCourseDetailViewModel =
 
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        if (course.id != "") {
-            viewModel.loadSessions(course.id)
-        }
+    LaunchedEffect(course.id) {
+        viewModel.loadSessions(course.id)
     }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
+            .padding(16.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "${sessions?.size ?: 0} sessions")
-            if (course.privateSessionPrice != "")
-                Button(onClick = { viewModel.onRequestSessionClicked() }) {
+            Text(
+                text = "${sessions?.size ?: 0} upcoming sessions",
+                style = MaterialTheme.typography.titleMedium
+            )
+            if (course.privateSessionPrice.isNotBlank() && course.privateSessionPrice != "0.0") {
+                Button(
+                    onClick = { viewModel.onsetShowRequestDialog(true) },
+                    shape = RoundedCornerShape(8.dp)
+                ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "Request Private Session",
                             style = MaterialTheme.typography.bodySmall
                         )
-                        Text(text = "₦${course.privateSessionPrice}")
+                        Text(text = "₦${course.privateSessionPrice}", style = MaterialTheme.typography.bodyMedium)
                     }
                 }
+            }
         }
 
-
-    }
-
-    Column(
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-
-    ) {
+        Spacer(modifier = Modifier.height(16.dp))
 
         if (sessions.isNullOrEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(32.dp)
-                    .height(200.dp),
+                    .padding(32.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Column {
-                    Text(
-                        text = "This course has no upcoming group sessions.",
-                        textAlign = TextAlign.Center
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        imageVector = Icons.Rounded.EventNote,
+                        contentDescription = "No Sessions",
+                        modifier = Modifier.size(48.dp),
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
-
-                    if (course.privateSessionPrice != "")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "No upcoming group sessions available for this course.",
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    if (course.privateSessionPrice.isNotBlank() && course.privateSessionPrice != "0.0") {
+                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "You can request a private one.",
-                            textAlign = TextAlign.Center
+                            text = "You can request a private session.",
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.bodySmall
                         )
+                    }
                 }
-
             }
-
         } else {
-            sessions.forEach { session ->
-                CourseSessionCard(
-                    isGroup = true,
-                    date = getDate(session.startTime.trim().toLong(), "EEE, dd MMM yyyy"),
-                    time = getDate(session.startTime.trim().toLong(), "hh:mm a"),
-                    price = session.price,
-                    typeIcon = Icons.Default.Groups,
-                    typeText = "${(session.maxAttendance.minus(session.students.size))} of ${session.maxAttendance}\nseats left"
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+
+                items(sessions!!) { session ->
+                    CourseSessionCard(
+                        isGroup = true,
+                        date = getDate(session.startTime.trim().toLong(), "EEE, dd MMM yyyy"),
+                        time = getDate(session.startTime.trim().toLong(), "hh:mm a"),
+                        price = session.price,
+                        typeIcon = Icons.Filled.Groups,
+                        typeText = "${(session.maxAttendance.minus(session.students.size))} / ${session.maxAttendance} seats left",
+                        onJoinClick = { /* TODO: Implement join session logic */ }
+                    )
+                }
             }
-            /*items(sessions) { session ->
-                CourseSessionCard(
-                    isGroup = true,
-                    date = getDate(session.startTime.trim().toLong(), "EEE, dd MMM yyyy"),
-                    time = getDate(session.startTime.trim().toLong(), "hh:mm a"),
-                    price = session.price,
-                    typeIcon = Icons.Default.Groups,
-                    typeText = "${(session.maxAttendance.minus(session.students.size))} of ${session.maxAttendance}\nseats left"
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }*/
         }
     }
 
-    if (viewModel.showRequestDialog) {
+    if (viewModel.showRequestDialog.collectAsState().value) {
         RequestPrivateSessionDialog(
-            data = viewModel.newSessionData,
-            onDismiss = { viewModel.onDismissDialog() },
+            data = viewModel.newSessionData.collectAsState().value,
+            onDismiss = { viewModel.onsetShowRequestDialog(false) },
             onConfirm = {
-                viewModel.checkWalletAndProceed(
-                    userId = auth.currentUser!!.uid,
-                    onSufficientFunds = {
-                        scope.launch {
-                            activity?.let { fragmentActivity ->
-                                viewModel.createSingleSession(
-                                    course.id,
-                                    course.ownerId,
-                                    fragmentActivity,
-                                    course.privateSessionPrice.toDouble()
-                                )
-                            } ?: run {
-                                // Handle case where activity isn't available
-                                // Maybe show error or use alternative authentication
+                auth.currentUser?.uid?.let { userId ->
+                    viewModel.checkWalletAndProceed(
+                        userId = userId,
+                        onSufficientFunds = {
+                            scope.launch {
+                                activity?.let { fragmentActivity ->
+                                    viewModel.createSingleSession(
+                                        course.id,
+                                        course.ownerId,
+                                        fragmentActivity,
+                                        course.privateSessionPrice.toDouble()
+                                    )
+                                }
                             }
-
-                        }
-                    },
-                    amount = course.privateSessionPrice.toDouble(),
-                    onInsufficientFunds = {
-                        // Dialog state is handled in viewModel
-
-
-                    }
-                )
+                        },
+                        amount = course.privateSessionPrice.toDouble(),
+                        onInsufficientFunds = { viewModel.onSetShowFundingDialog(true) }
+                    )
+                }
             },
             onValueChange = { updatedData -> viewModel.onUpdateNewSessionData(updatedData) }
         )
     }
 
-    if (viewModel.showFundingDialog) {
-        viewModel.walletState?.let { it1 ->
+    if (viewModel.showFundingDialog.collectAsState().value) {
+        viewModel.walletState.collectAsState().value?.let { wallet ->
             WithdrawBottomSheet(
-                wallet = it1,
+                wallet = wallet,
                 onSuccess = {
                     viewModel.dismissFundingDialog()
-                    auth.currentUser!!.uid?.let {
+                    auth.currentUser?.uid?.let { userId ->
                         viewModel.checkWalletAndProceed(
-                            userId = it,
+                            userId = userId,
                             onSufficientFunds = {
                                 scope.launch {
                                     activity?.let { fragmentActivity ->
@@ -208,20 +203,18 @@ fun CourseSessionsView(course: Course, viewModel: StudentCourseDetailViewModel =
                                             fragmentActivity,
                                             course.privateSessionPrice.toDouble()
                                         )
-                                    } ?: run {
-                                        // Handle case where activity isn't available
-                                        // Maybe show error or use alternative authentication
                                     }
                                 }
-                            }, amount = course.privateSessionPrice.toDouble(),
-                            onInsufficientFunds = { /* this won't be triggered again here */ }
+                            },
+                            amount = course.privateSessionPrice.toDouble(),
+                            onInsufficientFunds = { /* Won't be triggered again */ }
                         )
                     }
-                }, onClose = ({ viewModel.dismissFundingDialog() })
+                },
+                onClose = { viewModel.dismissFundingDialog() }
             )
         }
     }
-
 }
 
 @Composable
@@ -231,47 +224,53 @@ fun CourseSessionCard(
     time: String,
     price: String,
     typeIcon: ImageVector,
-    typeText: String
+    typeText: String,
+    onJoinClick: () -> Unit // Added callback for join action
 ) {
-    Card(
+    ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.weight(0.7f)) {
-                    Text(text = "Date: $date")
-                    Text(text = "Time: $time")
-                    Text(text = "Price: ₦$price")
-                }
-                Divider(
-                    color = Color.Gray,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(4.dp)
-                        .padding(horizontal = 4.dp)
-                )
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.weight(0.3f)
+            Column(modifier = Modifier.weight(0.7f)) {
+                Text(text = "Date: $date", style = MaterialTheme.typography.bodyLarge)
+                Text(text = "Time: $time", style = MaterialTheme.typography.bodyMedium)
+                Text(text = "Price: ₦$price", style = MaterialTheme.typography.bodyMedium)
+            }
+            Divider(
+                color = MaterialTheme.colorScheme.outline,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(1.dp)
+                    .padding(horizontal = 8.dp)
+            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.weight(0.3f)
+            ) {
+                Icon(imageVector = typeIcon, contentDescription = null, Modifier.size(32.dp))
+                Text(text = typeText, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = onJoinClick,
+                    shape = RoundedCornerShape(8.dp),
+                    enabled = isGroup // Enable join button for group sessions
                 ) {
-                    Icon(imageVector = typeIcon, contentDescription = null, Modifier.size(32.dp))
-                    Text(text = typeText)
-                    Button(
-                        modifier = Modifier.clip(shape = RoundedCornerShape(12.dp)),
-                        onClick = { /*TODO*/ }) {
-                        Text(text = "Join")
-                    }
+                    Text(text = "Join")
                 }
             }
         }
     }
-
 }
+
+

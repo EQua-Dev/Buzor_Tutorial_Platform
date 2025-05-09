@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,7 +52,7 @@ fun StudentSessionScreen(
     val courseIdState = remember { mutableStateOf("") }
     val teacherIdState = remember { mutableStateOf("") }
     val sessionIdState = remember { mutableStateOf("") }
-
+    val showFundingDialog =courseDetailViewModel.showFundingDialog.collectAsState().value
 
     val showWebView = remember { mutableStateOf(false) }
     val sessionLink = remember { mutableStateOf("") }
@@ -111,8 +112,8 @@ fun StudentSessionScreen(
                         mySessions = state.myGroupSessions + state.mySingleSessions,
                         courseTitles = state.courseTitles,
                         onOpenSession = { link, show ->
-                            sessionLink.value = link // 🔥 Save the link
-                            showWebView.value = show // 🔥 Trigger WebView
+                            sessionLink.value = link
+                            showWebView.value = show
                         }
                     )
 
@@ -164,38 +165,41 @@ fun StudentSessionScreen(
         }
 
     }
-    if (courseDetailViewModel.showFundingDialog) {
+
+    if (showFundingDialog) {
         courseDetailViewModel.walletState?.let { it1 ->
-            WithdrawBottomSheet(
-                wallet = it1,
-                onSuccess = {
-                    courseDetailViewModel.dismissFundingDialog()
-                    auth.currentUser!!.uid?.let {
-                        courseDetailViewModel.checkWalletAndProceed(
-                            userId = it,
-                            onSufficientFunds = {
-                                scope.launch {
-                                    activity?.let { fragmentActivity ->
-                                        viewModel.joinGroupSession(
-                                            courseTitleState.value,
-                                            courseIdState.value,
-                                            sessionIdState.value,
-                                            teacherIdState.value,
-                                            auth.currentUser!!.uid,
-                                            fragmentActivity,
-                                            amountState.value
-                                        )
-                                    } ?: run {
-                                        // Handle case where activity isn't available
-                                        // Maybe show error or use alternative authentication
+            it1.value?.let {
+                WithdrawBottomSheet(
+                    wallet = it,
+                    onSuccess = {
+                        courseDetailViewModel.dismissFundingDialog()
+                        auth.currentUser!!.uid?.let {
+                            courseDetailViewModel.checkWalletAndProceed(
+                                userId = it,
+                                onSufficientFunds = {
+                                    scope.launch {
+                                        activity?.let { fragmentActivity ->
+                                            viewModel.joinGroupSession(
+                                                courseTitleState.value,
+                                                courseIdState.value,
+                                                sessionIdState.value,
+                                                teacherIdState.value,
+                                                auth.currentUser!!.uid,
+                                                fragmentActivity,
+                                                amountState.value
+                                            )
+                                        } ?: run {
+                                            // Handle case where activity isn't available
+                                            // Maybe show error or use alternative authentication
+                                        }
                                     }
-                                }
-                            }, amount = amountState.value,
-                            onInsufficientFunds = { /* this won't be triggered again here */ }
-                        )
-                    }
-                }, onClose = ({ courseDetailViewModel.dismissFundingDialog() })
-            )
+                                }, amount = amountState.value,
+                                onInsufficientFunds = { /* this won't be triggered again here */ }
+                            )
+                        }
+                    }, onClose = ({ courseDetailViewModel.dismissFundingDialog() })
+                )
+            }
         }
     }
 

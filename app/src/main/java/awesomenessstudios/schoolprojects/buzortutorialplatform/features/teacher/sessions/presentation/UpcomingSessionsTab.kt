@@ -135,7 +135,7 @@ fun SessionCard(
                     Text(text = "Date: $date")
                     Text(text = "Time: $time")
                     Text(text = "Course: $course")
-                    Text(text = "Price: €$price")
+                    Text(text = "Price: ₦$price")
                 }
                 Divider(
                     color = Color.Gray,

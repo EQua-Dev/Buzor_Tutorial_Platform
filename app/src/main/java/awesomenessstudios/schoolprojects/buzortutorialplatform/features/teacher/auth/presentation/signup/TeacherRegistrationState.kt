@@ -8,11 +8,9 @@ data class TeacherRegistrationState(
     val phoneNumber: String = "",
     val subjects: List<String> = emptyList(),
     val otp: String = "",
-    val sentOtp: String = "",
     val newUserId: String = "",
     val isLoading: Boolean = false,
     val isRegistrationSuccessful: Boolean = false,
     val isOtpSent: Boolean = false,
-    val isVerificationSuccessful: Boolean = false,
     val errorMessage: String? = null
 )

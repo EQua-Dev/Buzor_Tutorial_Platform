@@ -9,13 +9,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -36,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -56,12 +64,10 @@ fun StudentCoursesScreen(
     viewModel: StudentCoursesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    val context = LocalContext.current
+    val studentUid = FirebaseAuth.getInstance().currentUser?.uid ?: "" // Handle potential null user
 
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Available Courses", "My Courses")
-    val studentUid = FirebaseAuth.getInstance().currentUser!!.uid
-
 
     LaunchedEffect(Unit) {
         viewModel.onEvent(StudentCoursesEvent.LoadStudentData)
@@ -77,93 +83,40 @@ fun StudentCoursesScreen(
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
             TabRow(selectedTabIndex = selectedTab) {
-
-                Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }) {
-                    Text("Available Courses")
-                }
-                Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }) {
-                    Text("My Courses")
+                tabs.forEachIndexed { index, title ->
+                    Tab(
+                        selected = selectedTab == index,
+                        onClick = { selectedTab = index },
+                        text = { Text(title) }
+                    )
                 }
             }
             when {
-                state.isLoading -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding)
-                    ) {
-                        LoadingIndicator()
-                    }
+                state.isLoading -> LoadingIndicator()
+                state.error != null -> ErrorState(message = state.error!!) {
+                    viewModel.onEvent(StudentCoursesEvent.LoadStudentData)
                 }
-
-                state.error != null -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding)
-                    ) {
-                        ErrorState(
-                            message = state.error!!,
-                            onRetry = { viewModel.onEvent(StudentCoursesEvent.LoadStudentData) }
-                        )
-                    }
-                }
-
-                state.courses.isEmpty() -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding)
-                    ) {
-                        EmptyState(grade = state.studentGrade)
-                    }
-                }
-
+                state.courses.isEmpty() -> EmptyState(grade = state.studentGrade)
                 else -> {
-
-
-                        when (selectedTab) {
-                            0 -> {
-                                val availableCourses = state.courses.filterNot { course ->
-                                    course.enrolledStudents.contains(studentUid)
-                                }
-                                CoursesList(
-                                    courses = availableCourses,
-                                    onCourseClick = { courseId ->
-                                        navController.navigate(
-                                            Screen.StudentCourseDetailScreen.route.replace(
-                                                "{courseId}",
-                                                courseId
-                                            )
-                                        )
-                                    }
+                    val coursesToShow = when (selectedTab) {
+                        0 -> state.courses.filterNot { it.enrolledStudents.contains(studentUid) }
+                        1 -> state.courses.filter { it.enrolledStudents.contains(studentUid) }
+                        else -> emptyList()
+                    }
+                    CoursesList(
+                        courses = coursesToShow,
+                        onCourseClick = { courseId ->
+                            navController.navigate(
+                                Screen.StudentCourseDetailScreen.route.replace(
+                                    "{courseId}",
+                                    courseId
                                 )
-                            }
-
-                            1 -> {
-                                val myCourses = state.courses.filter { course ->
-                                    course.enrolledStudents.contains(studentUid)
-                                }
-                                CoursesList(
-                                    courses = myCourses,
-                                    onCourseClick = { courseId ->
-                                        navController.navigate(
-                                            Screen.StudentCourseDetailScreen.route.replace(
-                                                "{courseId}",
-                                                courseId
-                                            )
-                                        )
-                                    }
-                                )
-                            }
+                            )
                         }
-
-
+                    )
                 }
             }
         }
-
-
     }
 }
 
@@ -186,10 +139,18 @@ private fun ErrorState(message: String, onRetry: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Icon(
+            imageVector = Icons.Rounded.Warning,
+            contentDescription = "Error Icon",
+            tint = MaterialTheme.colorScheme.error,
+            modifier = Modifier.size(48.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = message,
             color = MaterialTheme.colorScheme.error,
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = onRetry) {
@@ -205,13 +166,22 @@ private fun EmptyState(grade: String?) {
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(
+                imageVector = Icons.Rounded.Info,
+                contentDescription = "Empty Icon",
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                modifier = Modifier.size(48.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = if (!grade.isNullOrBlank()) {
                     "No courses available for grade $grade"
                 } else {
                     "No courses available"
                 },
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
             )
         }
     }
@@ -224,12 +194,12 @@ private fun CoursesList(
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp)
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(courses) { course ->
             CourseItem(
                 course = course,
-                modifier = Modifier.padding(vertical = 8.dp),
                 onClick = { onCourseClick(course.id) }
             )
         }
@@ -242,9 +212,10 @@ private fun CourseItem(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Card(
-        modifier = modifier,
-        onClick = onClick
+    ElevatedCard(
+        modifier = modifier.fillMaxWidth(),
+        onClick = onClick,
+        shape = RoundedCornerShape(8.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             AsyncImage(
@@ -253,30 +224,31 @@ private fun CourseItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
-                    .clip(MaterialTheme.shapes.medium),
+                    .clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = course.title,
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "${course.subject} • ${course.targetGrades.joinToString(", ")}",
+                text = "${course.subject}  •  Grades: ${course.targetGrades.joinToString(", ")}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Price: ₦${course.price}",
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }
 }
-
 @Composable
 fun CourseCard(course: Course, navController: NavHostController) {
     Card(

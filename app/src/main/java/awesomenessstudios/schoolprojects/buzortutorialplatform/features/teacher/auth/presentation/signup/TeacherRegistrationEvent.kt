@@ -10,10 +10,9 @@ sealed class TeacherRegistrationEvent {
     data class PasswordChanged(val password: String) : TeacherRegistrationEvent()
     data class PhoneNumberChanged(val phoneNumber: String) : TeacherRegistrationEvent()
     data class SubjectsChanged(val subject: String) : TeacherRegistrationEvent()
-    data class OtpSent(val otp: String) : TeacherRegistrationEvent()
     data class OtpChanged(val otp: String) : TeacherRegistrationEvent()
 
     data class Register(val activity: Activity) : TeacherRegistrationEvent()
     object VerifyOtp : TeacherRegistrationEvent()
-
+    object DismissError : TeacherRegistrationEvent() // Event to dismiss the error dialog
 }

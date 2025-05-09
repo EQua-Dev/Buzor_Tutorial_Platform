@@ -26,6 +26,8 @@ import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.HelpMe
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.LocationUtils
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
@@ -40,79 +42,96 @@ class StudentCourseDetailViewModel @Inject constructor(
     private val locationUtils: LocationUtils,
 ) : ViewModel() {
 
-    var courseState by mutableStateOf<Course?>(null)
-        private set
+    private val _courseState = MutableStateFlow<Course?>(null)
+    val courseState = _courseState.asStateFlow()
 
-    var teacherState by mutableStateOf<Teacher?>(null)
-        private set
+    private val _teacherState = MutableStateFlow<Teacher?>(null)
+    val teacherState = _teacherState.asStateFlow()
 
-    var groupSessionsState by mutableStateOf<List<GroupSession>?>(null)
-        private set
+    private val _groupSessionsState = MutableStateFlow<List<GroupSession>?>(null)
+    val groupSessionsState = _groupSessionsState.asStateFlow()
 
-    var loadingState by mutableStateOf<Boolean>(false)
-        private set
+    private val _loadingState = MutableStateFlow(false)
+    val loadingState = _loadingState.asStateFlow()
 
-    var selectedTab by mutableStateOf("Content")
-        private set
+    private val _selectedTab = MutableStateFlow("Content")
+    val selectedTab = _selectedTab.asStateFlow()
 
-    var walletState by mutableStateOf<Wallet?>(null)
-        private set
+    private val _walletState = MutableStateFlow<Wallet?>(null)
+    var walletState = _walletState.asStateFlow()
 
-    var showFundingDialog by mutableStateOf(false)
-        private set
-    var showRequestDialog by mutableStateOf(false)
-        private set
+    private val _showFundingDialog = MutableStateFlow(false)
+    val showFundingDialog = _showFundingDialog.asStateFlow()
 
-    var newSessionData by mutableStateOf(NewSingleSessionData())
-        private set
+    private val _showRequestDialog = MutableStateFlow(false)
+    var showRequestDialog = _showRequestDialog.asStateFlow()
+
+    private val _newSessionData = MutableStateFlow(NewSingleSessionData())
+    val newSessionData = _newSessionData.asStateFlow()
+
 
     fun onRequestSessionClicked() {
-        showRequestDialog = true
+        _showRequestDialog.value = true
     }
 
+
     fun onDismissDialog() {
-        showRequestDialog = false
-        newSessionData = NewSingleSessionData() // reset
+        _showRequestDialog.value = false
+        _newSessionData.value = NewSingleSessionData() // reset
     }
 
     fun onUpdateNewSessionData(updatedData: NewSingleSessionData) {
-        newSessionData = updatedData
+        _newSessionData.value = updatedData
+    }
+
+    fun onTabSelected(tab: String) {
+        _selectedTab.value = tab
+    }
+
+    fun onSetShowFundingDialog(value: Boolean){
+        _showFundingDialog.value = value
+    }
+    fun onsetShowRequestDialog(value: Boolean){
+        _showRequestDialog.value = value
     }
 
     fun loadCourse(courseId: String) {
         viewModelScope.launch {
-            loadingState = true
+            _loadingState.value = true
             courseRepository.getCourseByIdRealtime(courseId).collect { course ->
-                courseState = course
+                _courseState.value = course
                 loadTeacher(course.ownerId)
-                loadingState = false
+                _loadingState.value = false
             }
         }
     }
 
+
     private fun loadTeacher(ownerId: String) {
         viewModelScope.launch {
             teacherRepository.getTeacherDetailsById(ownerId).collect { teacher ->
-                teacherState = teacher
+                _teacherState.value = teacher
             }
         }
     }
 
     fun loadSessions(courseId: String) {
         viewModelScope.launch {
-            loadingState = true
+            _loadingState.value = true
             sessionRepository.getUpcomingGroupSessionsForCourse(courseId).collect { groupSessions ->
                 Log.d("TAG", "loadSessions: $groupSessions")
-                groupSessionsState = groupSessions
+                _groupSessionsState.value = groupSessions
             }
-            loadingState = false
+            _loadingState.value = false
 
         }
     }
 
+/*
     fun onTabSelected(tab: String) {
         selectedTab = tab
     }
+*/
 
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -136,7 +155,7 @@ class StudentCourseDetailViewModel @Inject constructor(
                             walletRepository.debitWallet(
                                 userId = auth.currentUser!!.uid,
                                 amount = amount,
-                                description = "Private session payment for: ${courseState?.title}",
+                                description = "Private session payment for: ${_courseState.value!!.title}",
                                 location = locationAddress,
                                 receiver = teacherId
                             ).getOrThrow()
@@ -180,46 +199,14 @@ class StudentCourseDetailViewModel @Inject constructor(
             // 4. Enroll student in course
             HelpMe.promptBiometric(
                 activity = activity,
-                title = "Authorize Payment for ${courseState?.title} private session",
+                title = "Authorize Payment for ${courseState.value!!.title}",
                 onSuccess = {
-                    viewModelScope.launch {
-                        sessionRepository.createSingleSession(
-                            SingleSession(
-                                id = UUID.randomUUID().toString(),
-                                courseId = courseId,
-                                teacherId = teacherId,
-                                studentId = auth.currentUser!!.uid,
-                                startTime = newSessionData.startTime,
-                                type = "Single",
-                                sessionLink = Constants.ZOOM_LINK, // optional
-                                price = courseState!!.privateSessionPrice,
-                                dateCreated = System.currentTimeMillis().toString(),
-                                status = SessionStatus.PENDING.name
-                            )
-                        )
-                        onDismissDialog()
-                    }
+                    enrollUserInCourse(courseId, auth.currentUser!!.uid)
                 },
                 onNoHardware = {
-                    viewModelScope.launch {
-                        sessionRepository.createSingleSession(
-                            SingleSession(
-                                courseId = courseId,
-                                teacherId = teacherId,
-                                studentId = auth.currentUser!!.uid,
-                                startTime = newSessionData.startTime,
-                                type = "Single",
-                                sessionLink = Constants.ZOOM_LINK, // optional
-                                price = newSessionData.price,
-                                dateCreated = System.currentTimeMillis().toString(),
-                                status = SessionStatus.PENDING.name
-                            )
-                        )
-                        onDismissDialog()
-                    }
+                    enrollUserInCourse(courseId, auth.currentUser!!.uid)
                 }
             )
-
 
             Result.Success(Unit)
         } catch (e: Exception) {
@@ -227,6 +214,14 @@ class StudentCourseDetailViewModel @Inject constructor(
         }
 
     }
+
+
+    private fun enrollUserInCourse(courseId: String, userId: String) {
+        viewModelScope.launch {
+            courseRepository.enrollUserInCourse(courseId, userId).getOrThrow()
+        }
+    }
+
 
     fun checkWalletAndProceed(
         userId: String,
@@ -236,12 +231,12 @@ class StudentCourseDetailViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             val wallet = walletRepository.getWalletByUserId(userId)
-            walletState = wallet
-            val coursePrice = amount ?: courseState?.price?.toDoubleOrNull() ?: 0.0
+            _walletState.value = wallet
+            val coursePrice = amount ?: _courseState.value!!.price.toDoubleOrNull() ?: 0.0
             if (wallet != null && wallet.balance.toDouble() >= coursePrice) {
                 onSufficientFunds()
             } else {
-                showFundingDialog = true
+                _showFundingDialog.value = true
 //                onInsufficientFunds()
             }
         }
@@ -249,9 +244,9 @@ class StudentCourseDetailViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.P)
     suspend fun enrollInCourse(activity: FragmentActivity, userId: String): Result<Unit> {
-        val course = courseState ?: return Result.Failure(Exception("Course not loaded"))
-        val coursePrice = course.price.toDoubleOrNull() ?: 0.0
-        val teacherId = course.ownerId
+        val course = _courseState ?: return Result.Failure(Exception("Course not loaded"))
+        val coursePrice = _courseState.value!!.price.toDoubleOrNull() ?: 0.0
+        val teacherId = _courseState.value!!.ownerId
 
         return try {
             // 1. Get current location for debit transaction
@@ -267,9 +262,9 @@ class StudentCourseDetailViewModel @Inject constructor(
                             walletRepository.debitWallet(
                                 userId = userId,
                                 amount = coursePrice,
-                                description = "Course enrollment: ${course.title}",
+                                description = "Course enrollment: ${_courseState.value!!.title}",
                                 location = locationAddress,
-                                receiver = course.ownerId
+                                receiver = _courseState.value!!.ownerId
                             ).getOrThrow()
                         }
                     } else {
@@ -292,7 +287,7 @@ class StudentCourseDetailViewModel @Inject constructor(
             walletRepository.creditWallet(
                 userId = teacherId,
                 amount = coursePrice,
-                description = "Course sale: ${course.title}",
+                description = "Course sale: ${_courseState.value!!.title}",
                 sender = userId
             ).getOrThrow()
 
@@ -300,15 +295,15 @@ class StudentCourseDetailViewModel @Inject constructor(
             // 4. Enroll student in course
             HelpMe.promptBiometric(
                 activity = activity,
-                title = "Authorize Payment for ${course.title}",
+                title = "Authorize Payment for ${_courseState.value!!.title}",
                 onSuccess = {
                     viewModelScope.launch {
-                        courseRepository.enrollUserInCourse(course.id, userId).getOrThrow()
+                        courseRepository.enrollUserInCourse(_courseState.value!!.id, userId).getOrThrow()
                     }
                 },
                 onNoHardware = {
                     viewModelScope.launch {
-                        courseRepository.enrollUserInCourse(course.id, userId).getOrThrow()
+                        courseRepository.enrollUserInCourse(_courseState.value!!.id, userId).getOrThrow()
                     }
                 }
             )
@@ -355,7 +350,7 @@ class StudentCourseDetailViewModel @Inject constructor(
 
 
     fun dismissFundingDialog() {
-        showFundingDialog = false
+        _showFundingDialog.value = false
     }
 }
 
