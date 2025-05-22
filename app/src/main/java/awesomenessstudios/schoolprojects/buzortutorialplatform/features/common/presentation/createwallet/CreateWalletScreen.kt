@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddCircleOutline
 import androidx.compose.material.icons.rounded.QuestionAnswer
@@ -56,7 +58,8 @@ fun CreateWalletScreen(
             "What is your favorite book?" to "What is your favorite book?"
         )
     }
-    val hashAlgorithms = remember { listOf("Long" to "SHA-256", "Average" to "SHA-512", "Short" to "MD5") }
+    val hashAlgorithms =
+        remember { listOf("Long" to "SHA-256", "Average" to "SHA-512", "Short" to "MD5") }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -65,7 +68,8 @@ fun CreateWalletScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 32.dp),
+                .padding(horizontal = 32.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -112,7 +116,12 @@ fun CreateWalletScreen(
                 onValueChange = { viewModel.onEvent(CreateWalletEvent.SecurityAnswer1Changed(it)) },
                 label = { Text("Answer to Question 1") },
                 modifier = Modifier.fillMaxWidth(),
-                leadingIcon = { Icon(Icons.Rounded.QuestionAnswer, contentDescription = "Answer 1 Icon") },
+                leadingIcon = {
+                    Icon(
+                        Icons.Rounded.QuestionAnswer,
+                        contentDescription = "Answer 1 Icon"
+                    )
+                },
                 shape = RoundedCornerShape(8.dp)
             )
 
@@ -140,7 +149,12 @@ fun CreateWalletScreen(
                 onValueChange = { viewModel.onEvent(CreateWalletEvent.SecurityAnswer2Changed(it)) },
                 label = { Text("Answer to Question 2") },
                 modifier = Modifier.fillMaxWidth(),
-                leadingIcon = { Icon(Icons.Rounded.QuestionAnswer, contentDescription = "Answer 2 Icon") },
+                leadingIcon = {
+                    Icon(
+                        Icons.Rounded.QuestionAnswer,
+                        contentDescription = "Answer 2 Icon"
+                    )
+                },
                 shape = RoundedCornerShape(8.dp)
             )
 
@@ -179,9 +193,16 @@ fun CreateWalletScreen(
                 )
             ) {
                 if (state.value.isLoading) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, strokeWidth = 3.dp)
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        strokeWidth = 3.dp
+                    )
                 } else {
-                    Icon(Icons.Rounded.AddCircleOutline, contentDescription = "Create Wallet Icon", modifier = Modifier.padding(end = 8.dp))
+                    Icon(
+                        Icons.Rounded.AddCircleOutline,
+                        contentDescription = "Create Wallet Icon",
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
                     Text("Create Wallet", style = MaterialTheme.typography.bodyLarge)
                 }
             }
@@ -199,7 +220,8 @@ fun CreateWalletScreen(
             // Navigate on Success
             LaunchedEffect(state.value.isWalletCreated) {
                 if (state.value.isWalletCreated) {
-                    Toast.makeText(context, "Wallet created successfully!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Wallet created successfully!", Toast.LENGTH_SHORT)
+                        .show()
                     onWalletCreated(state.value.userRole!!)
                 }
             }

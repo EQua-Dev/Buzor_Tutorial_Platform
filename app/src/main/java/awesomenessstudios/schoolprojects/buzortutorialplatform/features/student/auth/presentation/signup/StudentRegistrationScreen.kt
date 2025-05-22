@@ -209,11 +209,12 @@ fun StudentRegistrationScreen(
                 // Grade Dropdown
                 val grades = remember {
                     listOf(
-                        "Grade 1" to "Grade 1",
-                        "Grade 2" to "Grade 2",
-                        "Grade 3" to "Grade 3",
-                        "Grade 4" to "Grade 4",
-                        "Grade 5" to "Grade 5"
+                        "JSS 1" to "JSS 1",
+                        "JSS 2" to "JSS 2",
+                        "JSS 3" to "JSS 3",
+                        "SSS 1" to "SSS 1",
+                        "SSS 2" to "SSS 2",
+                        "SSS 2" to "SSS 3"
                     )
                 }
                 AssimOutlinedDropdown(

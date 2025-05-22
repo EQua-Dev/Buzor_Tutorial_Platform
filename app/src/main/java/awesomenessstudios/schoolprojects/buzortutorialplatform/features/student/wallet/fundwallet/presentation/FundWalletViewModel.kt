@@ -98,19 +98,19 @@ class WithdrawViewModel @Inject constructor(
         val hash1 = hash(wallet.securityQuestion1 + state.answer1, wallet.hashType)
         val hash2 = hash(wallet.securityQuestion2 + state.answer2, wallet.hashType)
         val combinedHash = hash(hash1 + hash2, wallet.hashType)
-
-          if (combinedHash != wallet.securityHash) {
-              onFailure("Security answers don't match")
-              return
-          }
+//
+//          if (combinedHash != wallet.securityHash) {
+//              onFailure("Security answers don't match")
+//              return
+//          }
         HelpMe.promptBiometric(
             activity = activity,
             title = "Authorize Transaction to withdraw ₦${state.amount}",
             onSuccess = {
-                fundWallet(wallet, onSuccess, onFailure)
+                withdrawWallet(wallet, onSuccess, onFailure)
             },
             onNoHardware = {
-                fundWallet(wallet, onSuccess, onFailure)
+                withdrawWallet(wallet, onSuccess, onFailure)
             }
         )
     }

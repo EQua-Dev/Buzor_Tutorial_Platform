@@ -231,7 +231,7 @@ fun TeacherRegistrationScreen(
                 )
                 // Custom Dropdown for Subjects (Assuming you have a composable named AssimOutlinedDropdown)
                 // Make sure 'subjects' is defined in the scope where this composable is used.
-                val subjects = remember { listOf("Mathematics", "Science", "English", "History", "Art") } // Example subjects
+                val subjects = remember { listOf("Mathematics", "Science", "English", "History", "Art", "Computer Studies") } // Example subjects
                 AssimOutlinedDropdown(
                     label = stringResource(id = R.string.subjects_label),
                     hint = stringResource(id = R.string.subjects_hint),

@@ -10,5 +10,7 @@ data class TeacherPaymentsUiState(
     val filter: String = "All",
     val isBalanceVisible: Boolean = true,
     val selectedTransaction: WalletHistory? = null,
-    val showFundingDialog: Boolean = false
+    val showFundingDialog: Boolean = false,
+    val error: String? = null,
+    val isLoading: Boolean = false
 )

@@ -45,8 +45,15 @@ fun CourseDetailsScreen(
 ) {
     val state = viewModel.state.value
     val context = LocalContext.current
-    val subjects = remember { listOf("Mathematics" to "Mathematics", "Science" to "Science", "History" to "History", "English" to "English") }
-    val grades = remember { listOf("Grade 1" to "Grade 1", "Grade 2" to "Grade 2", "Grade 3" to "Grade 3", "Grade 4" to "Grade 4", "Grade 5" to "Grade 5") }
+    val subjects = remember { listOf("Mathematics" to "Mathematics", "Science" to "Science", "History" to "History", "English" to "English", "Computer Studies" to "Computer Studies") }
+    val grades = remember {    listOf(
+        "JSS 1" to "JSS 1",
+        "JSS 2" to "JSS 2",
+        "JSS 3" to "JSS 3",
+        "SSS 1" to "SSS 1",
+        "SSS 2" to "SSS 2",
+        "SSS 2" to "SSS 3"
+    ) }
 
     Column(
         modifier = Modifier
