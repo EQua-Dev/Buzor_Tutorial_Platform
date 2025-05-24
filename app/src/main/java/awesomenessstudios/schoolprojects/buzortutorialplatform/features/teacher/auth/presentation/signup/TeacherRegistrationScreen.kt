@@ -3,6 +3,7 @@ package awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher
 import android.app.Activity
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -156,7 +157,8 @@ fun TeacherRegistrationScreen(
                             modifier = Modifier.fillMaxWidth(),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             leadingIcon = { Icon(Icons.Rounded.VpnKey, contentDescription = "OTP Icon") },
-                            shape = RoundedCornerShape(8.dp)
+                            shape = RoundedCornerShape(8.dp),
+                            singleLine = true
                         )
                         Button(
                             onClick = { viewModel.onEvent(TeacherRegistrationEvent.VerifyOtp) },
@@ -181,7 +183,8 @@ fun TeacherRegistrationScreen(
                     placeholder = { Text("John") },
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = { Icon(Icons.Rounded.Person, contentDescription = "First Name Icon") },
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    singleLine = true
                 )
                 OutlinedTextField(
                     value = state.value.lastName,
@@ -190,7 +193,8 @@ fun TeacherRegistrationScreen(
                     placeholder = { Text("Doe") },
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = { Icon(Icons.Rounded.PersonOutline, contentDescription = "Last Name Icon") },
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    singleLine = true
                 )
                 OutlinedTextField(
                     value = state.value.email,
@@ -200,7 +204,8 @@ fun TeacherRegistrationScreen(
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = { Icon(Icons.Rounded.Email, contentDescription = "Email Icon") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    singleLine = true
                 )
                 var passwordVisible by remember { mutableStateOf(false) }
                 OutlinedTextField(
@@ -227,21 +232,25 @@ fun TeacherRegistrationScreen(
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = { Icon(Icons.Rounded.Phone, contentDescription = "Phone Number Icon") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    singleLine = true
                 )
                 // Custom Dropdown for Subjects (Assuming you have a composable named AssimOutlinedDropdown)
                 // Make sure 'subjects' is defined in the scope where this composable is used.
-                val subjects = remember { listOf("Mathematics", "Science", "English", "History", "Art", "Computer Studies") } // Example subjects
+//                val subjects = remember { listOf("Mathematics", "Science", "English", "History", "Art", "Computer Studies") } // Example subjects
+                val subjectNames = remember { subjects.map { it.first } }
+
                 AssimOutlinedDropdown(
                     label = stringResource(id = R.string.subjects_label),
                     hint = stringResource(id = R.string.subjects_hint),
-                    options = subjects,
+                    options = subjectNames,
                     selectedValue = state.value.subjects.joinToString(", "),
                     onValueSelected = { viewModel.onEvent(TeacherRegistrationEvent.SubjectsChanged(it.toString())) },
                     isCompulsory = true,
                     isSearchable = true,
                     leadingIcon = { Icon(Icons.Rounded.Book, contentDescription = "Subjects Icon") },
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+
                 )
 
                 Button(
@@ -307,7 +316,10 @@ fun AssimOutlinedDropdown(
             placeholder = { Text(hint) },
             leadingIcon = leadingIcon,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.fillMaxWidth().menuAnchor(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor()
+                .clickable { expanded = !expanded },
             readOnly = !isSearchable,
             isError = error != null,
             supportingText = { if (error != null) Text(error, color = MaterialTheme.colorScheme.error) },
@@ -339,7 +351,9 @@ fun AssimOutlinedDropdown(
 @Composable
 fun OTPPreview(modifier: Modifier = Modifier) {
     BuzorTutorialPlatformTheme {
-        Box(modifier = Modifier.fillMaxSize().padding(12.dp), contentAlignment = Alignment.Center){
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(12.dp), contentAlignment = Alignment.Center){
             Column {
                 Text(text = "Enter OTP Sent to your device", style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center,)
                 // OTP Input Field

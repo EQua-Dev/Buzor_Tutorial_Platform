@@ -87,7 +87,8 @@ fun ForgotPasswordScreen(
                             color = MaterialTheme.colorScheme.error
                         )
                     }
-                }
+                },
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.height(24.dp))

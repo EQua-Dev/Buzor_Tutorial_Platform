@@ -55,6 +55,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import awesomenessstudios.schoolprojects.buzortutorialplatform.R
 import awesomenessstudios.schoolprojects.buzortutorialplatform.components.AssimOutlinedDropdown
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.auth.presentation.login.LoadingDialog
+import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Constants.grades
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -126,7 +127,8 @@ fun StudentRegistrationScreen(
                             modifier = Modifier.fillMaxWidth(),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             leadingIcon = { Icon(Icons.Rounded.VpnKey, contentDescription = "OTP Icon") },
-                            shape = RoundedCornerShape(8.dp)
+                            shape = RoundedCornerShape(8.dp),
+                            singleLine = true
                         )
                         Button(
                             onClick = { viewModel.onEvent(StudentRegistrationEvent.VerifyOtp) },
@@ -156,7 +158,8 @@ fun StudentRegistrationScreen(
                     label = { Text("First Name") },
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = { Icon(Icons.Rounded.Person, contentDescription = "First Name Icon") },
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    singleLine = true
                 )
 
                 OutlinedTextField(
@@ -165,7 +168,8 @@ fun StudentRegistrationScreen(
                     label = { Text("Last Name") },
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = { Icon(Icons.Rounded.PersonOutline, contentDescription = "Last Name Icon") },
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    singleLine = true
                 )
 
                 OutlinedTextField(
@@ -175,17 +179,20 @@ fun StudentRegistrationScreen(
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = { Icon(Icons.Rounded.Email, contentDescription = "Email Icon") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    singleLine = true
                 )
 
                 OutlinedTextField(
                     value = state.phoneNumber,
                     onValueChange = { viewModel.onEvent(StudentRegistrationEvent.PhoneNumberChanged(it)) },
                     label = { Text("Phone Number") },
+                    placeholder = { Text("+234 801 234 5678") },
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = { Icon(Icons.Rounded.Phone, contentDescription = "Phone Number Icon") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    singleLine = true
                 )
 
                 var passwordVisible by remember { mutableStateOf(false) }
@@ -203,11 +210,12 @@ fun StudentRegistrationScreen(
                         }
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    singleLine = true
                 )
 
                 // Grade Dropdown
-                val grades = remember {
+                /*val grades = remember {
                     listOf(
                         "JSS 1" to "JSS 1",
                         "JSS 2" to "JSS 2",
@@ -217,6 +225,7 @@ fun StudentRegistrationScreen(
                         "SSS 2" to "SSS 3"
                     )
                 }
+                */
                 AssimOutlinedDropdown(
                     label = stringResource(id = R.string.grade_label),
                     hint = stringResource(id = R.string.grade_hint),

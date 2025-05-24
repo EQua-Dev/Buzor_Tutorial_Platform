@@ -18,6 +18,7 @@ import androidx.compose.material.icons.rounded.AttachMoney
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Grade
 import androidx.compose.material.icons.rounded.NavigateNext
+import androidx.compose.material.icons.rounded.Payments
 import androidx.compose.material.icons.rounded.Title
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -126,7 +127,7 @@ fun CourseDetailsScreen(
             onValueChange = { viewModel.onEvent(CreateCourseEvent.PriceChanged(it)) },
             label = { Text("Course Price (₦)") },
             modifier = Modifier.fillMaxWidth(),
-            leadingIcon = { Icon(Icons.Rounded.AttachMoney, contentDescription = "Price Icon") },
+            leadingIcon = { Icon(Icons.Rounded.Payments, contentDescription = "Price Icon") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             shape = RoundedCornerShape(8.dp)
         )

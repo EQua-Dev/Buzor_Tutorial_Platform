@@ -118,7 +118,8 @@ fun LoginScreen(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = { Icon(Icons.Rounded.Email, contentDescription = "Email Icon") },
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    singleLine = true
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -146,6 +147,7 @@ fun LoginScreen(
                             )
                         }
                     },
+                    singleLine = true,
                     shape = RoundedCornerShape(8.dp)
                 )
 

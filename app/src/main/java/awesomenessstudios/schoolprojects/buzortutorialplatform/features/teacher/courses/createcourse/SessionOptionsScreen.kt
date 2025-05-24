@@ -20,6 +20,7 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.AttachMoney
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Payments
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -114,7 +115,7 @@ fun SessionOptionsScreen(
                 label = { Text("Private Session Price (₦)") },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                leadingIcon = { Icon(Icons.Rounded.AttachMoney, contentDescription = "Private Session Price Icon") },
+                leadingIcon = { Icon(Icons.Rounded.Payments, contentDescription = "Private Session Price Icon") },
                 shape = RoundedCornerShape(8.dp)
             )
         }
@@ -157,7 +158,7 @@ fun SessionOptionsScreen(
                 label = { Text("Group Session Price (₦)") },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                leadingIcon = { Icon(Icons.Rounded.AttachMoney, contentDescription = "Group Session Price Icon") },
+                leadingIcon = { Icon(Icons.Rounded.Payments, contentDescription = "Group Session Price Icon") },
                 shape = RoundedCornerShape(8.dp)
             )
 
@@ -166,10 +167,10 @@ fun SessionOptionsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Session Date:", style = MaterialTheme.typography.bodyLarge)
+                Text("First Session Date:", style = MaterialTheme.typography.bodyLarge)
                 Button(onClick = { showDateTimePicker = true }, shape = RoundedCornerShape(8.dp)) {
                     Icon(Icons.Rounded.CalendarMonth, contentDescription = "Date Time Picker Icon", modifier = Modifier.padding(end = 8.dp))
-                    Text("Select Session Date and Time")
+                    Text("Select")
                 }
             }
 /*
