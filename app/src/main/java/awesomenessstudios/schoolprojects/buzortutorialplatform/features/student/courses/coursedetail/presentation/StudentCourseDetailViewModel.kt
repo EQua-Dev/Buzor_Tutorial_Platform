@@ -256,7 +256,7 @@ class StudentCourseDetailViewModel @Inject constructor(
         userId: String,
         amount: Double?,
         onSufficientFunds: () -> Unit,
-        onInsufficientFunds: @Composable () -> Unit
+        onInsufficientFunds: () -> Unit
     ) {
         viewModelScope.launch {
             val wallet = walletRepository.getWalletByUserId(userId)
@@ -266,7 +266,7 @@ class StudentCourseDetailViewModel @Inject constructor(
                 onSufficientFunds()
             } else {
                 _showFundingDialog.value = true
-//                onInsufficientFunds()
+                onInsufficientFunds()
             }
         }
     }
