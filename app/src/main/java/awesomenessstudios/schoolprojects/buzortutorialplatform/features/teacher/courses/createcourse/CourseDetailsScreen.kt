@@ -56,7 +56,7 @@ fun CourseDetailsScreen(
         "JSS 3" to "JSS 3",
         "SSS 1" to "SSS 1",
         "SSS 2" to "SSS 2",
-        "SSS 2" to "SSS 3"
+        "SSS 3" to "SSS 3"
     ) }
 
     Column(

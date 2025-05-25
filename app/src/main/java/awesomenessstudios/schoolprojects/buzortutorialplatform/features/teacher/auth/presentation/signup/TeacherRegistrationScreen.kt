@@ -55,6 +55,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
@@ -172,7 +173,7 @@ fun TeacherRegistrationScreen(
                             singleLine = true
                         )
                         Button(
-                            onClick = { viewModel.onEvent(TeacherRegistrationEvent.VerifyOtp) },
+                            onClick = { viewModel.onEvent(TeacherRegistrationEvent.VerifyOtp(activity!!)) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(8.dp),
                             colors = ButtonDefaults.buttonColors(
@@ -201,13 +202,14 @@ fun TeacherRegistrationScreen(
                     keyboardActions = KeyboardActions(
                         onNext = { focusRequesterLastName.requestFocus() }
                     )
+
                 )
                 OutlinedTextField(
                     value = state.value.lastName,
                     onValueChange = { viewModel.onEvent(TeacherRegistrationEvent.LastNameChanged(it)) },
                     label = { Text("Last Name") },
                     placeholder = { Text("Doe") },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequesterLastName),
                     leadingIcon = { Icon(Icons.Rounded.PersonOutline, contentDescription = "Last Name Icon") },
                     shape = RoundedCornerShape(8.dp),
                     singleLine = true,
@@ -221,7 +223,7 @@ fun TeacherRegistrationScreen(
                     onValueChange = { viewModel.onEvent(TeacherRegistrationEvent.EmailChanged(it)) },
                     label = { Text("Email") },
                     placeholder = { Text("teacher@example.com") },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequesterEmail),
                     leadingIcon = { Icon(Icons.Rounded.Email, contentDescription = "Email Icon") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
                     keyboardActions = KeyboardActions(
@@ -236,7 +238,7 @@ fun TeacherRegistrationScreen(
                     value = state.value.password,
                     onValueChange = { viewModel.onEvent(TeacherRegistrationEvent.PasswordChanged(it)) },
                     label = { Text("Password") },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequesterPassword),
                     leadingIcon = { Icon(Icons.Rounded.Lock, contentDescription = "Password Icon") },
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
@@ -257,7 +259,7 @@ fun TeacherRegistrationScreen(
                     onValueChange = { viewModel.onEvent(TeacherRegistrationEvent.PhoneNumberChanged(it)) },
                     label = { Text("Phone Number") },
                     placeholder = { Text("+234 801 234 5678") },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequesterPhone),
                     leadingIcon = { Icon(Icons.Rounded.Phone, contentDescription = "Phone Number Icon") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Done),
                     /*keyboardActions = KeyboardActions(

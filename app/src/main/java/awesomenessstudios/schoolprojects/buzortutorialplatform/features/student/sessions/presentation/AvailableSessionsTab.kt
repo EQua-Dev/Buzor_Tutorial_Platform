@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.GroupSession
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.sessions.presentation.SessionCard
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.getDate
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun AvailableSessionsTab(
@@ -25,6 +26,9 @@ fun AvailableSessionsTab(
     courseTitles: Map<String, String>,
     onJoin: (amount: Double, courseTitle: String, courseId: String, teacherId: String, sessionId: String) -> Unit
 ) {
+
+    val auth = FirebaseAuth.getInstance()
+
     if (availableSessions.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("No available group sessions.", style = MaterialTheme.typography.bodyMedium)
@@ -37,6 +41,7 @@ fun AvailableSessionsTab(
         ) {
             items(availableSessions) { session ->
                 SessionCard(
+                    enableJoin = !session.students.contains(auth.currentUser!!.uid),
                     date = getDate(session.startTime.trim().toLong(), "EEE, dd MMM yyyy"),
                     time = getDate(session.startTime.trim().toLong(), "hh:mm a"),
                     course = courseTitles[session.courseId] ?: "Unknown Course",

@@ -12,6 +12,7 @@ import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Common.mAut
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Common.walletsCollectionRef
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.LocationUtils
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.UserPreferences
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +31,8 @@ import kotlin.math.log
 class CreateWalletViewModel @Inject constructor(
     private val geocoder: Geocoder,
     private val locationUtils: LocationUtils,
-    private val userPreferences: UserPreferences
+    private val userPreferences: UserPreferences,
+    private val auth: FirebaseAuth,
 ) : ViewModel() {
 
 
@@ -126,7 +128,7 @@ class CreateWalletViewModel @Inject constructor(
         // Save the wallet to Firestore
         val wallet = Wallet(
             id = UUID.randomUUID().toString(),
-            ownerId = _state.value.loggedInUser,
+            ownerId = auth.currentUser!!.uid,
             balance = "0.0",
             dateCreated = SimpleDateFormat(
                 "yyyy-MM-dd HH:mm:ss",

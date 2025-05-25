@@ -39,6 +39,7 @@ import awesomenessstudios.schoolprojects.buzortutorialplatform.data.enums.Sessio
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.GroupSession
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.SingleSession
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.getDate
+import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -56,6 +57,7 @@ fun UpcomingSessionsTab(
     val context = LocalContext.current
     val showWebView = remember { mutableStateOf(false) }
     val sessionLink = remember { mutableStateOf("") }
+    val auth = FirebaseAuth.getInstance()
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
 
@@ -70,6 +72,7 @@ fun UpcomingSessionsTab(
         items(groupSessions) { session ->
             val courseTitle = courseTitles[session.courseId] ?: "Loading..."
             SessionCard(
+                enableJoin = !session.students.contains(auth.currentUser!!.uid),
                 date = getDate(session.startTime.trim().toLong(), "EEE, dd MMM yyyy"),
                 time = getDate(session.startTime.trim().toLong(), "hh:mm a"),
                 course = courseTitle,
@@ -123,6 +126,7 @@ fun SessionCard(
     typeText: String,
     type: String,
     isStudent: Boolean = false,
+    enableJoin: Boolean = true,
     onJoin: (() -> Unit?)? = null,
     takenSeats: Int = 0,
     maxSeats: Int = 0,
@@ -181,7 +185,7 @@ fun SessionCard(
                             if (onJoin != null) {
                                 onJoin()
                             }
-                        }) {
+                        }, enabled = enableJoin) {
                             Text(text = "Join")
                         }
                     }

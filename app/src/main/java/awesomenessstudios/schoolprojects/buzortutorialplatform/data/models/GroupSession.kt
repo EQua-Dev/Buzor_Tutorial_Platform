@@ -4,7 +4,7 @@ data class GroupSession(
     override val id: String = "",
     override val courseId: String = "",
     override val teacherId: String = "",
-    val students: List<String> = listOf(),
+    override val students: List<String> = listOf(),
     override val startTime: String = "",
     override val price: String = "",
     override val type: String = "",
@@ -18,6 +18,7 @@ sealed interface Session {
     val id: String
     val courseId: String
     val teacherId: String
+    val students: List<String>
     val startTime: String
     val price: String
     val status: String?

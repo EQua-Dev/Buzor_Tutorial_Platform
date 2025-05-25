@@ -50,6 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.Result
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.Course
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.courses.coursedetail.components.RequestPrivateSessionDialog
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.sessions.presentation.StudentSessionViewModel
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.payments.fundwallet.presentation.WithdrawBottomSheet
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.sessions.presentation.SessionCard
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.LoadingDialog
@@ -60,7 +61,11 @@ import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
-fun CourseSessionsView(course: Course, viewModel: StudentCourseDetailViewModel = hiltViewModel()) {
+fun CourseSessionsView(
+    course: Course,
+    viewModel: StudentCourseDetailViewModel = hiltViewModel(),
+    sessionViewModel: StudentSessionViewModel = hiltViewModel(),
+) {
     val sessions by viewModel.groupSessionsState.collectAsState()
     val auth = FirebaseAuth.getInstance()
 
@@ -156,7 +161,37 @@ fun CourseSessionsView(course: Course, viewModel: StudentCourseDetailViewModel =
                     price = session.price,
                     typeIcon = Icons.Filled.Groups,
                     typeText = "${(session.maxAttendance.minus(session.students.size))} / ${session.maxAttendance} seats left",
-                    onJoinClick = { /* TODO: Implement join session logic */ }
+                    enableJoin = !session.students.contains(auth.currentUser!!.uid),
+                    onJoinClick = {
+                        viewModel.checkWalletAndProceed(
+                            userId = auth.currentUser!!.uid,
+                            onSufficientFunds = {
+                                scope.launch {
+                                    activity?.let { fragmentActivity ->
+                                        sessionViewModel.joinGroupSession(
+                                            course.title,
+                                            course.id,
+                                            session.id,
+                                            course.ownerId,
+                                            auth.currentUser!!.uid,
+                                            fragmentActivity,
+                                            session.price.toDouble()
+                                        )
+                                    } ?: run {
+                                        // Handle case where activity isn't available
+                                        // Maybe show error or use alternative authentication
+                                    }
+
+                                }
+                            },
+                            amount = session.price.toDouble(),
+                            onInsufficientFunds = {
+                                // Dialog state is handled in viewModel
+
+
+                            }
+                        )
+                    }
                 )
             }
 
@@ -229,6 +264,7 @@ fun CourseSessionsView(course: Course, viewModel: StudentCourseDetailViewModel =
 
 @Composable
 fun CourseSessionCard(
+    enableJoin: Boolean,
     isGroup: Boolean,
     date: String,
     time: String,
@@ -278,7 +314,7 @@ fun CourseSessionCard(
                 Button(
                     onClick = onJoinClick,
                     shape = RoundedCornerShape(8.dp),
-                    enabled = isGroup // Enable join button for group sessions
+                    enabled = isGroup && enableJoin // Enable join button for group sessions
                 ) {
                     Text(text = "Join")
                 }

@@ -70,8 +70,8 @@ class TeacherRegistrationViewModel @Inject constructor(private val userPreferenc
                 _state.value = _state.value.copy(otp = event.otp)
             }
 
-            TeacherRegistrationEvent.VerifyOtp -> {
-                verifyOtp()
+            is TeacherRegistrationEvent.VerifyOtp -> {
+                verifyOtp(event.activity)
             }
 
             TeacherRegistrationEvent.DismissError -> {
@@ -142,7 +142,7 @@ class TeacherRegistrationViewModel @Inject constructor(private val userPreferenc
         PhoneAuthProvider.verifyPhoneNumber(options)
     }
 
-    private fun verifyOtp() {
+    private fun verifyOtp(activity: Activity) {
         val enteredOtp = _state.value.otp
         if (verificationId.isNullOrEmpty() || enteredOtp.length != 6) {
             _state.value = _state.value.copy(errorMessage = "Invalid OTP")
@@ -151,25 +151,40 @@ class TeacherRegistrationViewModel @Inject constructor(private val userPreferenc
 
         _state.value = _state.value.copy(isLoading = true, errorMessage = null)
         val credential = PhoneAuthProvider.getCredential(verificationId!!, enteredOtp)
-        signInWithPhoneAuthCredential(credential, _state.value.newUserId)
-    }
-
-    private fun verifyOtpWithCredential(credential: PhoneAuthCredential, userId: String) {
-        mAuth.signInWithCredential(credential)
+        saveTeacherDetails(_state.value.newUserId)
+    /*    mAuth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    saveTeacherDetails(userId) // Save details after successful phone auth
+                    // Phone number verification successful, now save teacher details
+                    mAuth.sign
+                    saveTeacherDetails(_state.value.newUserId)
                 } else {
                     _state.value = _state.value.copy(
                         isLoading = false,
                         errorMessage = task.exception?.message ?: "OTP verification failed"
                     )
                 }
-            }
+            }*/
+    }
+
+    private fun verifyOtpWithCredential(credential: PhoneAuthCredential, userId: String) {
+        saveTeacherDetails(userId)
+      /*  mAuth.signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                     // Save details after successful phone auth
+                } else {
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        errorMessage = task.exception?.message ?: "OTP verification failed"
+                    )
+                }
+            }*/
     }
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential, userId: String) {
-        mAuth.signInWithCredential(credential)
+
+      /*  mAuth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     // Phone number verification successful, now save teacher details
@@ -180,7 +195,7 @@ class TeacherRegistrationViewModel @Inject constructor(private val userPreferenc
                         errorMessage = task.exception?.message ?: "OTP verification failed"
                     )
                 }
-            }
+            }*/
     }
 
     private fun saveTeacherDetails(userId: String) {

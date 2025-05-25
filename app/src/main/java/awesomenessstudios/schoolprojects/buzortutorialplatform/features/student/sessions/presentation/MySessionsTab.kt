@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.Session
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.sessions.presentation.SessionCard
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.getDate
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun MySessionsTab(
@@ -29,6 +30,7 @@ fun MySessionsTab(
     onOpenSession: (sessionLink: String, showWebView: Boolean) -> Unit
 ) {
 
+    val auth = FirebaseAuth.getInstance()
     val context = LocalContext.current
     if (mySessions.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -42,9 +44,10 @@ fun MySessionsTab(
         ) {
             items(mySessions) { session ->
                 SessionCard(
+                    enableJoin = !session.students.contains(auth.currentUser!!.uid),
                     status = session.status,
-                    date = getDate(session.startTime.toLong(), "EEE, dd MMM yyyy"),
-                    time = getDate(session.startTime.toLong(), "hh:mm a"),
+                    date = getDate(session.startTime.trim().toLong(), "EEE, dd MMM yyyy"),
+                    time = getDate(session.startTime.trim().toLong(), "hh:mm a"),
                     course = courseTitles[session.courseId] ?: "Unknown Course",
                     price = session.price,
                     typeIcon = if (session.type == "Group") Icons.Default.Group else Icons.Default.Person,

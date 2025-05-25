@@ -4,6 +4,7 @@ data class SingleSession(
     override val id: String = "",
     override val courseId: String = "",
     override val teacherId: String = "",
+    override val students: List<String> = listOf(),
     override val startTime: String = "",
     override val type: String = "",
     val studentId: String = "",

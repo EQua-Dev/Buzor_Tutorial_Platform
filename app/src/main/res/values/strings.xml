@@ -17,11 +17,11 @@
     <string name="securtiy_question_two_label">Security Question Two</string>
     <string name="course_subject_label">Course Subject</string>
     <string name="course_subject_hint">Select subject for course</string>
-    <string name="course_grades_label">Target Grades</string>
-    <string name="course_grades_hint">Select the target Grades</string>
+    <string name="course_grades_label">Target Class</string>
+    <string name="course_grades_hint">Select the target Class</string>
     <string name="create_create">Create Course</string>
-    <string name="grade_label">Your grade</string>
-    <string name="grade_hint">Select your school grade</string>
+    <string name="grade_label">Your class</string>
+    <string name="grade_hint">Select your class</string>
     <string name="student_course_detail_screen">Student Course Detail Screen</string>
-    <string name="course_content_viewer_screen">COntent Content Viewer Screen</string>
+    <string name="course_content_viewer_screen">Content Content Viewer Screen</string>
 </resources>
