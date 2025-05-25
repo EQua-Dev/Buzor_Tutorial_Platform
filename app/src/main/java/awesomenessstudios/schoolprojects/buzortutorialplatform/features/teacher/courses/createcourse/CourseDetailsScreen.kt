@@ -37,6 +37,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import awesomenessstudios.schoolprojects.buzortutorialplatform.R
 import awesomenessstudios.schoolprojects.buzortutorialplatform.components.AssimOutlinedDropdown
+import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.Constants.subjects
 
 
 @Composable
@@ -46,7 +47,9 @@ fun CourseDetailsScreen(
 ) {
     val state = viewModel.state.value
     val context = LocalContext.current
-    val subjects = remember { listOf("Mathematics" to "Mathematics", "Science" to "Science", "History" to "History", "English" to "English", "Computer Studies" to "Computer Studies") }
+    val subjects = remember { subjects }
+
+//    val subjects = remember { listOf("Mathematics" to "Mathematics", "Science" to "Science", "History" to "History", "English" to "English", "Computer Studies" to "Computer Studies") }
     val grades = remember {    listOf(
         "JSS 1" to "JSS 1",
         "JSS 2" to "JSS 2",
@@ -64,7 +67,7 @@ fun CourseDetailsScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            "Course Details",
+            "Enter New Course Details",
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -90,7 +93,7 @@ fun CourseDetailsScreen(
             selectedValue = state.targetGrades,
             onValueSelected = { viewModel.onEvent(CreateCourseEvent.TargetGradesChanged(it.toString())) },
             isCompulsory = true,
-            isSearchable = true,
+            isSearchable = false,
 //            leadingIcon = { Icon(Icons.Rounded.Grade, contentDescription = "Grades Icon") },
             modifier = Modifier.clip(shape = RoundedCornerShape(8.dp)),
         )

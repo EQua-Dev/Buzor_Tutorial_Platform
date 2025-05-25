@@ -75,11 +75,11 @@ fun StudentCoursesScreen(
 
     Scaffold(
         modifier = modifier,
-        topBar = {
+      /*  topBar = {
             TopAppBar(
                 title = { Text("Courses") }
             )
-        }
+        }*/
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
             TabRow(selectedTabIndex = selectedTab) {
@@ -197,6 +197,11 @@ private fun CoursesList(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        if (courses.isEmpty()){
+            item {
+                EmptyState(grade = "Your Grade")
+            }
+        }
         items(courses) { course ->
             CourseItem(
                 course = course,

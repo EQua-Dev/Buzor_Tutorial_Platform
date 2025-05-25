@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -61,6 +62,7 @@ fun TeacherCoursesScreen(
                 is TeacherCoursesEvent.CreateNewCourse -> {
                     navController.navigate(Screen.CreateCourseFlowScreen.route) // Replace with your actual route
                 }
+
                 is TeacherCoursesEvent.NavigateToCourse -> {
 //                    navController.navigate("course_details/${event.courseId}") // Replace with your actual route
                 }
@@ -85,6 +87,7 @@ fun TeacherCoursesScreen(
                     CircularProgressIndicator()
                 }
             }
+
             state.error != null -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -98,11 +101,17 @@ fun TeacherCoursesScreen(
                     }
                 }
             }
+
             state.courses.isEmpty() -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No courses found. Create your first course!")
+                    Text(
+                        "No courses found. Create your first course!",
+                        modifier = Modifier.padding(16.dp),
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
+
             else -> {
                 LazyColumn(
                     modifier = Modifier
@@ -115,7 +124,13 @@ fun TeacherCoursesScreen(
                     items(state.courses) { course ->
                         CourseCard(
                             course = course,
-                            onClick = { viewModel.onEvent(TeacherCoursesEvent.NavigateToCourse(course.id)) }
+                            onClick = {
+                                viewModel.onEvent(
+                                    TeacherCoursesEvent.NavigateToCourse(
+                                        course.id
+                                    )
+                                )
+                            }
                         )
                     }
                 }
@@ -139,7 +154,7 @@ fun CourseCard(
         Column {
             // Cover Image
             AsyncImage(
-                model = course.coverImage.ifEmpty { R.drawable.placeholder_course }, // Add a placeholder drawable
+                model = course.coverImage.ifEmpty { R.drawable.ic_launcher_background }, // Add a placeholder drawable
                 contentDescription = "Course cover image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -181,10 +196,10 @@ fun CourseCard(
                             contentDescription = "Rating",
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(16.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(
-                                    text = "%.1f".format(course.rating),
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "%.1f".format(course.rating),
                             style = MaterialTheme.typography.bodySmall
                         )
                     }

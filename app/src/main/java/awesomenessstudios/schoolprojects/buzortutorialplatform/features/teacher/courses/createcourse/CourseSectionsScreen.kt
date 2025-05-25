@@ -53,7 +53,7 @@ fun CourseSectionsScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            "Course Sections",
+            "New Course Content Sections",
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onBackground
         )

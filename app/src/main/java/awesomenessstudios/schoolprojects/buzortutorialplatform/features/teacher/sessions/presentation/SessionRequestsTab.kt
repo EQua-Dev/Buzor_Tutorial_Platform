@@ -61,7 +61,14 @@ fun SessionRequestsTab(
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
 
+        if (sessionRequests.isEmpty()) {
+            item {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = "You have no session requests")
+                }
+            }
 
+        }
         items(sessionRequests) { session ->
             val courseTitle = courseTitles[session.courseId] ?: "Loading..."
 
@@ -135,7 +142,7 @@ fun SessionRequestCard(
                     text = "Child Name: ${viewModel.state.student?.firstName} ${viewModel.state.student?.lastName}",
                     style = MaterialTheme.typography.bodyMedium
                 )
-                Text(text = "Price: €$price", style = MaterialTheme.typography.bodyMedium)
+                Text(text = "Price: ₦$price", style = MaterialTheme.typography.bodyMedium)
             }
 
             Divider(
@@ -154,7 +161,7 @@ fun SessionRequestCard(
             ) {
                 Button(
                     onClick = onAccept,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Green),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B5E20)),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)

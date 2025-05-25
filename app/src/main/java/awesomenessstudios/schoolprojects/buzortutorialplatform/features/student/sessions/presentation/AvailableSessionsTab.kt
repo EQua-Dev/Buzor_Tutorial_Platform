@@ -37,8 +37,8 @@ fun AvailableSessionsTab(
         ) {
             items(availableSessions) { session ->
                 SessionCard(
-                    date = getDate(session.startTime.toLong(), "EEE, dd MMM yyyy"),
-                    time = getDate(session.startTime.toLong(), "hh:mm a"),
+                    date = getDate(session.startTime.trim().toLong(), "EEE, dd MMM yyyy"),
+                    time = getDate(session.startTime.trim().toLong(), "hh:mm a"),
                     course = courseTitles[session.courseId] ?: "Unknown Course",
                     price = session.price,
                     typeIcon = if (session.type == "Group") Icons.Default.Group else Icons.Default.Person,

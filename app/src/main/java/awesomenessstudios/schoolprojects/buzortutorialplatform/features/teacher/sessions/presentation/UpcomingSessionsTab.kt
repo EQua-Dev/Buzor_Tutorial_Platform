@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -21,6 +22,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -56,6 +58,15 @@ fun UpcomingSessionsTab(
     val sessionLink = remember { mutableStateOf("") }
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
+
+        if (groupSessions.isEmpty() && singleSessions.isEmpty()) {
+            item {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = "You have no upcoming sessions")
+                }
+            }
+
+        }
         items(groupSessions) { session ->
             val courseTitle = courseTitles[session.courseId] ?: "Loading..."
             SessionCard(
@@ -132,10 +143,10 @@ fun SessionCard(
         ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.weight(0.7f)) {
-                    Text(text = "Date: $date")
-                    Text(text = "Time: $time")
-                    Text(text = "Course: $course")
-                    Text(text = "Price: ₦$price")
+                    Text(text = "Date: $date", style = MaterialTheme.typography.bodyMedium)
+                    Text(text = "Time: $time", style = MaterialTheme.typography.bodyMedium)
+                    Text(text = "Course: $course", style = MaterialTheme.typography.bodyMedium)
+                    Text(text = "Price: ₦$price", style = MaterialTheme.typography.bodyMedium)
                 }
                 Divider(
                     color = Color.Gray,
@@ -154,15 +165,18 @@ fun SessionCard(
                             text = status.lowercase(),
                             color = when (status) {
                                 SessionStatus.PENDING.name -> Color(0xFFFFA500) // Orange
-                                SessionStatus.ACCEPTED.name -> Color.Green
+                                SessionStatus.ACCEPTED.name -> Color(0xFF145A32)
                                 else -> Color.Red
                             }
                         )
 
                     Icon(imageVector = typeIcon, contentDescription = null)
-                    Text(text = typeText)
+                    Text(text = typeText, style = MaterialTheme.typography.bodyMedium)
                     if (type == "Group" && isStudent) {
-                        Text(text = "${maxSeats.minus(takenSeats)} left")
+                        Text(
+                            text = "${maxSeats.minus(takenSeats)} left",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                         Button(onClick = {
                             if (onJoin != null) {
                                 onJoin()

@@ -80,7 +80,7 @@ fun StudentCourseDetailScreen(
     val scope = rememberCoroutineScope()
 
     Scaffold(
-        topBar = {
+       /* topBar = {
             TopAppBar(
                 title = { Text(course?.title ?: "Course Details") },
                 navigationIcon = {
@@ -89,7 +89,7 @@ fun StudentCourseDetailScreen(
                     }
                 }
             )
-        }
+        }*/
     ) { paddingValues ->
         AnimatedVisibility(
             visible = course != null,
@@ -126,7 +126,7 @@ fun StudentCourseDetailScreen(
 
                     Text(
                         text = it.description,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
 

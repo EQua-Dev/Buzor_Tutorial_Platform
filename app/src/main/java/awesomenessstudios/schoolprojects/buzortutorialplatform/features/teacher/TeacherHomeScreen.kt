@@ -42,7 +42,7 @@ fun TeacherHomeScreen(
 
     val navController = rememberNavController()
 
-
+    val state = teacherHomeViewModel.state
 //    val studentData by remember { studentHomeViewModel.studentInfo }.collectAsState()
 
     val errorMessage = remember { mutableStateOf("") }
@@ -70,7 +70,7 @@ fun TeacherHomeScreen(
         }, topBar = {
             TopAppBar(
                 title = {
-                    Text("Hello, Teacher")
+                    Text("Hello, ${state.teacher.firstName}")
                 },
                 actions = {
                     Text("Logout", modifier = Modifier.clickable {

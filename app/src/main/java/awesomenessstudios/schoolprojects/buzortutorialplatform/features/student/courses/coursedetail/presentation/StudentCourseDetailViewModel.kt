@@ -88,10 +88,11 @@ class StudentCourseDetailViewModel @Inject constructor(
         _selectedTab.value = tab
     }
 
-    fun onSetShowFundingDialog(value: Boolean){
+    fun onSetShowFundingDialog(value: Boolean) {
         _showFundingDialog.value = value
     }
-    fun onsetShowRequestDialog(value: Boolean){
+
+    fun onsetShowRequestDialog(value: Boolean) {
         _showRequestDialog.value = value
     }
 
@@ -127,11 +128,11 @@ class StudentCourseDetailViewModel @Inject constructor(
         }
     }
 
-/*
-    fun onTabSelected(tab: String) {
-        selectedTab = tab
-    }
-*/
+    /*
+        fun onTabSelected(tab: String) {
+            selectedTab = tab
+        }
+    */
 
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -201,10 +202,38 @@ class StudentCourseDetailViewModel @Inject constructor(
                 activity = activity,
                 title = "Authorize Payment for ${courseState.value!!.title}",
                 onSuccess = {
-                    enrollUserInCourse(courseId, auth.currentUser!!.uid)
+
+                    val singleSession = SingleSession(
+                        courseId = courseId,
+                        teacherId = teacherId,
+                        startTime = _newSessionData.value.startTime,
+                        type = "Single",
+                        studentId = auth.currentUser!!.uid,
+                        price = amount.toString(),
+                        dateCreated = System.currentTimeMillis().toString(),
+                        status = SessionStatus.PENDING.name
+                    )
+                    viewModelScope.launch {
+                        sessionRepository.createSingleSession(singleSession)
+                    }
+
+//                    createSingleSession(courseId, teacherId, activity, amount)
+//                    enrollUserInCourse(courseId, auth.currentUser!!.uid)
                 },
                 onNoHardware = {
-                    enrollUserInCourse(courseId, auth.currentUser!!.uid)
+                    val singleSession = SingleSession(
+                        courseId = courseId,
+                        teacherId = teacherId,
+                        startTime = _newSessionData.value.startTime,
+                        type = "Single",
+                        studentId = auth.currentUser!!.uid,
+                        price = amount.toString(),
+                        dateCreated = System.currentTimeMillis().toString(),
+                        status = SessionStatus.PENDING.name
+                    )
+                    viewModelScope.launch {
+                        sessionRepository.createSingleSession(singleSession)
+                    }
                 }
             )
 
@@ -252,45 +281,6 @@ class StudentCourseDetailViewModel @Inject constructor(
             // 1. Get current location for debit transaction
             val location = locationUtils.getCurrentLocation()
 
-            locationUtils.getCurrentLocation()
-                .addOnSuccessListener { location ->
-                    if (location != null) {
-                        val locationAddress = locationUtils.getLocationAddress(location)
-
-                        // 2. Debit student's wallet
-                        viewModelScope.launch {
-                            walletRepository.debitWallet(
-                                userId = userId,
-                                amount = coursePrice,
-                                description = "Course enrollment: ${_courseState.value!!.title}",
-                                location = locationAddress,
-                                receiver = _courseState.value!!.ownerId
-                            ).getOrThrow()
-                        }
-                    } else {
-                        /* _state.value = _state.value.copy(
-                             isLoading = false,
-                             errorMessage = "Unable to fetch location"
-                         )*/
-                    }
-                }
-                .addOnFailureListener { e ->
-                    /* _state.value = _state.value.copy(
-                         isLoading = false,
-                         errorMessage = e.message ?: "Failed to get location"
-                     )*/
-                }
-
-
-            // 3. Credit teacher's wallet
-
-            walletRepository.creditWallet(
-                userId = teacherId,
-                amount = coursePrice,
-                description = "Course sale: ${_courseState.value!!.title}",
-                sender = userId
-            ).getOrThrow()
-
 
             // 4. Enroll student in course
             HelpMe.promptBiometric(
@@ -298,12 +288,102 @@ class StudentCourseDetailViewModel @Inject constructor(
                 title = "Authorize Payment for ${_courseState.value!!.title}",
                 onSuccess = {
                     viewModelScope.launch {
-                        courseRepository.enrollUserInCourse(_courseState.value!!.id, userId).getOrThrow()
+                        locationUtils.getCurrentLocation()
+                            .addOnSuccessListener { location ->
+                                if (location != null) {
+                                    val locationAddress = locationUtils.getLocationAddress(location)
+
+                                    // 2. Debit student's wallet
+                                    viewModelScope.launch {
+                                        walletRepository.debitWallet(
+                                            userId = userId,
+                                            amount = coursePrice,
+                                            description = "Course enrollment: ${_courseState.value!!.title}",
+                                            location = locationAddress,
+                                            receiver = _courseState.value!!.ownerId
+                                        ).getOrThrow()
+
+                                        // 3. Credit teacher's wallet
+
+                                        walletRepository.creditWallet(
+                                            userId = teacherId,
+                                            amount = coursePrice,
+                                            description = "Course sale: ${_courseState.value!!.title}",
+                                            sender = userId
+                                        ).getOrThrow()
+
+
+                                        courseRepository.enrollUserInCourse(
+                                            _courseState.value!!.id,
+                                            userId
+                                        ).getOrThrow()
+                                    }
+
+                                } else {
+                                    /* _state.value = _state.value.copy(
+                                         isLoading = false,
+                                         errorMessage = "Unable to fetch location"
+                                     )*/
+                                }
+                            }
+                            .addOnFailureListener { e ->
+                                /* _state.value = _state.value.copy(
+                                     isLoading = false,
+                                     errorMessage = e.message ?: "Failed to get location"
+                                 )*/
+                            }
+
+
                     }
                 },
                 onNoHardware = {
                     viewModelScope.launch {
-                        courseRepository.enrollUserInCourse(_courseState.value!!.id, userId).getOrThrow()
+                        locationUtils.getCurrentLocation()
+                            .addOnSuccessListener { location ->
+                                if (location != null) {
+                                    val locationAddress = locationUtils.getLocationAddress(location)
+
+                                    // 2. Debit student's wallet
+                                    viewModelScope.launch {
+                                        walletRepository.debitWallet(
+                                            userId = userId,
+                                            amount = coursePrice,
+                                            description = "Course enrollment: ${_courseState.value!!.title}",
+                                            location = locationAddress,
+                                            receiver = _courseState.value!!.ownerId
+                                        ).getOrThrow()
+
+                                        // 3. Credit teacher's wallet
+
+                                        walletRepository.creditWallet(
+                                            userId = teacherId,
+                                            amount = coursePrice,
+                                            description = "Course sale: ${_courseState.value!!.title}",
+                                            sender = userId
+                                        ).getOrThrow()
+
+
+                                        courseRepository.enrollUserInCourse(
+                                            _courseState.value!!.id,
+                                            userId
+                                        ).getOrThrow()
+                                    }
+
+                                } else {
+                                    /* _state.value = _state.value.copy(
+                                         isLoading = false,
+                                         errorMessage = "Unable to fetch location"
+                                     )*/
+                                }
+                            }
+                            .addOnFailureListener { e ->
+                                /* _state.value = _state.value.copy(
+                                     isLoading = false,
+                                     errorMessage = e.message ?: "Failed to get location"
+                                 )*/
+                            }
+
+
                     }
                 }
             )
@@ -316,7 +396,13 @@ class StudentCourseDetailViewModel @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
-    fun rateCourse(courseId: String, userId: String, rating: Int, activity: FragmentActivity, courseTitle: String) {
+    fun rateCourse(
+        courseId: String,
+        userId: String,
+        rating: Int,
+        activity: FragmentActivity,
+        courseTitle: String
+    ) {
         HelpMe.promptBiometric(
             activity = activity,
             title = "Confirm rating $courseTitle $rating stars",
@@ -346,7 +432,6 @@ class StudentCourseDetailViewModel @Inject constructor(
 
 
     }
-
 
 
     fun dismissFundingDialog() {

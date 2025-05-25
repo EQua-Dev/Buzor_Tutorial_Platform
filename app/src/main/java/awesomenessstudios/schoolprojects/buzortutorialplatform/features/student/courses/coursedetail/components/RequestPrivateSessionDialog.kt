@@ -110,6 +110,7 @@ fun RequestPrivateSessionDialog(
                     .toInstant()
                     .toEpochMilli()
                 onValueChange(data.copy(startTime = millis.toString()))
+                onConfirm()
             }
         )
     }

@@ -6,10 +6,14 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberDatePickerState
@@ -25,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.util.Calendar
@@ -82,12 +87,41 @@ fun DateTimePickerDialog(
     onDismiss: () -> Unit,
     onDateTimeSelected: (LocalDate, LocalTime) -> Unit
 ) {
-    var showDatePicker by remember { mutableStateOf(false) }
+    var showDatePicker by remember { mutableStateOf(true) }
     var showTimePicker by remember { mutableStateOf(false) }
     var internalSelectedDate by remember { mutableStateOf<LocalDate?>(null) }
     var internalSelectedTime by remember { mutableStateOf<LocalTime?>(null) }
-    val datePickerState = rememberDatePickerState()
-    val timePickerState = rememberTimePickerState()
+
+    // Get current date and time
+    val currentDate = LocalDate.now()
+    val currentTime = LocalTime.now()
+
+    // Convert current date to milliseconds for DatePicker
+    val currentDateMillis =
+        currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = currentDateMillis,
+        yearRange = currentDate.year..(currentDate.year + 1), // Limit to current year + 1
+        initialDisplayMode = DisplayMode.Picker,
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                // Only allow dates from today onward
+                return utcTimeMillis >= currentDateMillis
+            }
+
+            override fun isSelectableYear(year: Int): Boolean {
+                // Only allow current year and next year
+                return year == currentDate.year || year == currentDate.year + 1
+            }
+        }
+    )
+
+    val timePickerState = rememberTimePickerState(
+        initialHour = currentTime.hour,
+        initialMinute = currentTime.minute,
+        is24Hour = false
+    )
 
     if (show) {
         AlertDialog(
@@ -97,8 +131,17 @@ fun DateTimePickerDialog(
                     onClick = {
                         internalSelectedDate?.let { date ->
                             internalSelectedTime?.let { time ->
-                                onDateTimeSelected(date, time)
-                                onDismiss()
+                                val selectedDateTime = LocalDateTime.of(date, time)
+                                val currentDateTime = LocalDateTime.now()
+
+                                if (selectedDateTime.isAfter(currentDateTime)) {
+                                    onDateTimeSelected(date, time)
+                                    onDismiss()
+                                }
+                                else {
+                                    // Show some error to user if they selected past time
+                                    // You might want to show a Toast or Snackbar here
+                                }
                             }
                         }
                     },
@@ -116,10 +159,37 @@ fun DateTimePickerDialog(
             text = {
                 Column {
                     if (showDatePicker) {
-                        DatePicker(state = datePickerState, showModeToggle = false)
+                        DatePicker(
+                            state = datePickerState,
+                            showModeToggle = false,)
+                        // Add a button to confirm date selection
+                        Button(
+                            onClick = {
+                                datePickerState.selectedDateMillis?.let {
+                                    internalSelectedDate = Instant.ofEpochMilli(it)
+                                        .atZone(ZoneId.systemDefault())
+                                        .toLocalDate()
+                                    showDatePicker = false
+                                    showTimePicker = true
+                                }
+                            },
+                            modifier = Modifier.padding(top = 16.dp)
+                        ) {
+                            Text("Continue to Time Selection")
+                        }
                     }
                     if (showTimePicker) {
                         TimePicker(state = timePickerState)
+                        // Additional validation for time if selected date is today
+                        internalSelectedDate?.let { selectedDate ->
+                            if (selectedDate == currentDate) {
+                                Text(
+                                    text = "Please select a time in the future",
+                                    color = MaterialTheme.colorScheme.error,
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                            }
+                        }
                     }
 
                     if (!showDatePicker && !showTimePicker) {
@@ -137,14 +207,15 @@ fun DateTimePickerDialog(
             }
         )
 
-        LaunchedEffect(datePickerState.selectedDateMillis) {
+  /*      LaunchedEffect(datePickerState.selectedDateMillis) {
             datePickerState.selectedDateMillis?.let {
-                internalSelectedDate = Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
+                internalSelectedDate =
+                    Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
                 showDatePicker = false
                 showTimePicker = true // Immediately show time picker after date selection
             }
         }
-
+*/
         LaunchedEffect(timePickerState.hour, timePickerState.minute) {
             if (showTimePicker) {
                 internalSelectedTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
@@ -152,3 +223,4 @@ fun DateTimePickerDialog(
         }
     }
 }
+

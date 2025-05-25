@@ -79,8 +79,13 @@ class SessionRepositoryImpl @Inject constructor(
         }
 
     override suspend fun createSingleSession(session: SingleSession) {
-        firestore.collection(SINGLE_SESSIONS_REF).document(session.id)
-            .set(session)
+
+        val newSessionDocumentRef = firestore.collection(SINGLE_SESSIONS_REF).document()
+
+        val singleSession = session.copy(id = newSessionDocumentRef.id)
+
+        firestore.collection(SINGLE_SESSIONS_REF).document(singleSession.id)
+            .set(singleSession)
             .await()
     }
 
@@ -177,7 +182,7 @@ class SessionRepositoryImpl @Inject constructor(
     override fun getPendingRequests(studentId: String): Flow<List<SingleSession>> = callbackFlow {
         val listener = firestore.collection(SINGLE_SESSIONS_REF)
             .whereEqualTo("studentId", studentId)
-//            .whereEqualTo("status", SessionStatus.PENDING.name)
+            .whereEqualTo("status", SessionStatus.PENDING.name)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     close(error)

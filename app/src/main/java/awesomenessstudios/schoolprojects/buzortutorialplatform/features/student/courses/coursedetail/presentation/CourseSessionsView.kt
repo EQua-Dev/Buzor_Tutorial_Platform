@@ -81,13 +81,14 @@ fun CourseSessionsView(course: Course, viewModel: StudentCourseDetailViewModel =
             .fillMaxSize()
             .padding(16.dp)
     ) {
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "${sessions?.size ?: 0} upcoming sessions",
+                text = "${sessions?.size ?: 0} upcoming session(s)",
                 style = MaterialTheme.typography.titleMedium
             )
             if (course.privateSessionPrice.isNotBlank() && course.privateSessionPrice != "0.0") {
@@ -100,7 +101,10 @@ fun CourseSessionsView(course: Course, viewModel: StudentCourseDetailViewModel =
                             text = "Request Private Session",
                             style = MaterialTheme.typography.bodySmall
                         )
-                        Text(text = "₦${course.privateSessionPrice}", style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            text = "₦${course.privateSessionPrice}",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 }
             }
@@ -108,7 +112,10 @@ fun CourseSessionsView(course: Course, viewModel: StudentCourseDetailViewModel =
 
         Spacer(modifier = Modifier.height(16.dp))
 
+
+
         if (sessions.isNullOrEmpty()) {
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -138,22 +145,23 @@ fun CourseSessionsView(course: Course, viewModel: StudentCourseDetailViewModel =
                     }
                 }
             }
-        } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
 
-                items(sessions!!) { session ->
-                    CourseSessionCard(
-                        isGroup = true,
-                        date = getDate(session.startTime.trim().toLong(), "EEE, dd MMM yyyy"),
-                        time = getDate(session.startTime.trim().toLong(), "hh:mm a"),
-                        price = session.price,
-                        typeIcon = Icons.Filled.Groups,
-                        typeText = "${(session.maxAttendance.minus(session.students.size))} / ${session.maxAttendance} seats left",
-                        onJoinClick = { /* TODO: Implement join session logic */ }
-                    )
-                }
+
+        } else {
+            sessions!!.forEach { session ->
+                CourseSessionCard(
+                    isGroup = true,
+                    date = getDate(session.startTime.trim().toLong(), "EEE, dd MMM yyyy"),
+                    time = getDate(session.startTime.trim().toLong(), "hh:mm a"),
+                    price = session.price,
+                    typeIcon = Icons.Filled.Groups,
+                    typeText = "${(session.maxAttendance.minus(session.students.size))} / ${session.maxAttendance} seats left",
+                    onJoinClick = { /* TODO: Implement join session logic */ }
+                )
             }
+
         }
+
     }
 
     if (viewModel.showRequestDialog.collectAsState().value) {
@@ -161,10 +169,12 @@ fun CourseSessionsView(course: Course, viewModel: StudentCourseDetailViewModel =
             data = viewModel.newSessionData.collectAsState().value,
             onDismiss = { viewModel.onsetShowRequestDialog(false) },
             onConfirm = {
+                viewModel.onsetShowRequestDialog(false)
                 auth.currentUser?.uid?.let { userId ->
                     viewModel.checkWalletAndProceed(
                         userId = userId,
                         onSufficientFunds = {
+                            viewModel.onsetShowRequestDialog(false)
                             scope.launch {
                                 activity?.let { fragmentActivity ->
                                     viewModel.createSingleSession(
@@ -259,7 +269,11 @@ fun CourseSessionCard(
                 modifier = Modifier.weight(0.3f)
             ) {
                 Icon(imageVector = typeIcon, contentDescription = null, Modifier.size(32.dp))
-                Text(text = typeText, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
+                Text(
+                    text = typeText,
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = onJoinClick,

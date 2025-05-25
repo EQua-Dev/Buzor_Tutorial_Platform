@@ -1,5 +1,7 @@
 package awesomenessstudios.schoolprojects.buzortutorialplatform.features.student
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -31,9 +33,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import awesomenessstudios.schoolprojects.buzortutorialplatform.R
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.profile.presentation.StudentProfileEvent
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.profile.presentation.StudentProfileViewModel
 import awesomenessstudios.schoolprojects.buzortutorialplatform.navigation.Screen
 import awesomenessstudios.schoolprojects.buzortutorialplatform.navigation.StudentBottomBar
 import awesomenessstudios.schoolprojects.buzortutorialplatform.navigation.StudentBottomNavigationGraph
@@ -41,16 +46,22 @@ import awesomenessstudios.schoolprojects.buzortutorialplatform.navigation.Teache
 import awesomenessstudios.schoolprojects.buzortutorialplatform.navigation.TeacherBottomNavigationGraph
 import coil.compose.AsyncImage
 
+@RequiresApi(Build.VERSION_CODES.P)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudentHomeScreen(
     baseNavHostController: NavHostController,
     onNavigationRequested: (String, Boolean) -> Unit,
-//    studentHomeViewModel: StudentHomeViewModel = hiltViewModel()
+    viewModel: StudentProfileViewModel = hiltViewModel()
 ) {
 
     val navController = rememberNavController()
 
+    val state = viewModel.state
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.onEvent(StudentProfileEvent.LoadProfile)
+    }
 
 //    val studentData by remember { studentHomeViewModel.studentInfo }.collectAsState()
 
@@ -82,10 +93,13 @@ fun StudentHomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Hello, Student")
+                    Text("Hello, ${state.student.firstName}")
                 },
                 actions = {
-                    Icon(
+                    TextButton(onClick = { baseNavHostController.navigate(Screen.InitRoleTypeScreen.route) }) {
+                        Text(text = "Logout")
+                    }
+                /*    Icon(
                         painter = painterResource(id = R.drawable.ic_logout), // Replace with your actual drawable name
                         contentDescription = "Logout",
                         modifier = Modifier
@@ -95,7 +109,7 @@ fun StudentHomeScreen(
                             }
                             .size(24.dp), // You can adjust the size as needed
                         tint = Color.Unspecified // Use Unspecified if you want the original icon color
-                    )
+                    )*/
                     /* DropdownMenu(
                          expanded = false*//* State for menu visibility *//*,
                 onDismissRequest = { *//* Close menu *//* }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -53,11 +54,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -83,6 +87,13 @@ fun TeacherRegistrationScreen(
     val state = viewModel.state
     val context = LocalContext.current
     val activity = context as? Activity
+
+    val focusRequesterLastName = remember { FocusRequester() }
+    val focusRequesterEmail = remember { FocusRequester() }
+    val focusRequesterPassword = remember { FocusRequester() }
+    val focusRequesterPhone = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
 
     // Error Message Display
     state.value.errorMessage?.let { error ->
@@ -174,7 +185,8 @@ fun TeacherRegistrationScreen(
                         }
                     }
                 }
-            } else {
+            } else
+            {
                 // Registration Form
                 OutlinedTextField(
                     value = state.value.firstName,
@@ -184,7 +196,11 @@ fun TeacherRegistrationScreen(
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = { Icon(Icons.Rounded.Person, contentDescription = "First Name Icon") },
                     shape = RoundedCornerShape(8.dp),
-                    singleLine = true
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(
+                        onNext = { focusRequesterLastName.requestFocus() }
+                    )
                 )
                 OutlinedTextField(
                     value = state.value.lastName,
@@ -194,7 +210,11 @@ fun TeacherRegistrationScreen(
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = { Icon(Icons.Rounded.PersonOutline, contentDescription = "Last Name Icon") },
                     shape = RoundedCornerShape(8.dp),
-                    singleLine = true
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(
+                        onNext = { focusRequesterEmail.requestFocus() }
+                    )
                 )
                 OutlinedTextField(
                     value = state.value.email,
@@ -203,9 +223,13 @@ fun TeacherRegistrationScreen(
                     placeholder = { Text("teacher@example.com") },
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = { Icon(Icons.Rounded.Email, contentDescription = "Email Icon") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(
+                        onNext = { focusRequesterPassword.requestFocus() }
+                    ),
                     shape = RoundedCornerShape(8.dp),
-                    singleLine = true
+                    singleLine = true,
+
                 )
                 var passwordVisible by remember { mutableStateOf(false) }
                 OutlinedTextField(
@@ -221,8 +245,12 @@ fun TeacherRegistrationScreen(
                             Icon(imageVector = image, contentDescription = if (passwordVisible) "Hide password" else "Show password")
                         }
                     },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    shape = RoundedCornerShape(8.dp)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(
+                        onNext = { focusRequesterPhone.requestFocus() }
+                    ),
+                    shape = RoundedCornerShape(8.dp),
+                    singleLine = true
                 )
                 OutlinedTextField(
                     value = state.value.phoneNumber,
@@ -231,7 +259,13 @@ fun TeacherRegistrationScreen(
                     placeholder = { Text("+234 801 234 5678") },
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = { Icon(Icons.Rounded.Phone, contentDescription = "Phone Number Icon") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Done),
+                    /*keyboardActions = KeyboardActions(
+                        onDone = {
+                            keyboardController?.hide()
+                            viewModel.onEvent(TeacherRegistrationEvent.Register(activity!!))
+                        }
+                    ),*/
                     shape = RoundedCornerShape(8.dp),
                     singleLine = true
                 )

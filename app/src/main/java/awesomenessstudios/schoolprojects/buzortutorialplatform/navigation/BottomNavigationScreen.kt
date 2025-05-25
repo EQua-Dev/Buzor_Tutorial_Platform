@@ -52,8 +52,8 @@ sealed class TeacherBottomBarScreen(
     val icon: ImageVector,
     val route: String
 ){
-    object Sessions : TeacherBottomBarScreen("Sessions", Icons.Default.VideoCall, "teacher_sessions",)
-    object Courses : TeacherBottomBarScreen("Courses", Icons.Default.MenuBook, "teacher_courses",)
+    object Sessions : TeacherBottomBarScreen("My Sessions", Icons.Default.VideoCall, "teacher_sessions",)
+    object Courses : TeacherBottomBarScreen("My Courses", Icons.Default.MenuBook, "teacher_courses",)
     object Payments : TeacherBottomBarScreen("Payments", Icons.Default.Payments, "teacher_payments",)
     object Profile : TeacherBottomBarScreen("Profile", Icons.Default.Person, "teacher_profile",)
 

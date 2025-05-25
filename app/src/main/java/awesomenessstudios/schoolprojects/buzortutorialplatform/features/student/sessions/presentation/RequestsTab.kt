@@ -1,4 +1,3 @@
-/*
 package awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.sessions.presentation
 
 import androidx.compose.foundation.layout.Arrangement
@@ -30,11 +29,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.Escrow
 import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.SingleSession
+import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.sessions.presentation.SessionCard
 import awesomenessstudios.schoolprojects.buzortutorialplatform.features.teacher.sessions.presentation.TeacherSessionViewModel
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.getDate
 
 @Composable
-fun RequestsTab(sessionRequests: List<Escrow>, courseTitles: Map<String, String>) {
+fun RequestsTab(sessionRequests: List<SingleSession>, courseTitles: Map<String, String>) {
     if (sessionRequests.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("No pending session requests.", style = MaterialTheme.typography.bodyMedium)
@@ -47,13 +47,17 @@ fun RequestsTab(sessionRequests: List<Escrow>, courseTitles: Map<String, String>
         ) {
             items(sessionRequests) { request ->
                 StudentSessionRequestCard(
-                    date = getDate(request.)
+                    date = getDate(request.startTime.toLong(), "EEE, dd MMM yyyy"),
+                    time =  getDate(request.startTime.toLong(), "hh:mm a"),
+                    course = courseTitles[request.courseId] ?: "Unknown Course",
+                    price = request.price,
+                    status = request.status,
                 )
-                SessionCard(
+                /*SessionCard(
                     title = courseTitles[request.courseId] ?: "Unknown Course",
-                    dateTime = formatDateTime(request.startTime),
+                    dateTime = getDate(request.startTime.toLong(), "EEE, dd MMM yyyy | hh:mm a"),
                     type = "Requested Session"
-                )
+                )*/
             }
         }
     }
@@ -90,7 +94,7 @@ fun StudentSessionRequestCard(
                 Text(text = "Time: $time", style = MaterialTheme.typography.bodyMedium)
                 Text(text = "Course: $course", style = MaterialTheme.typography.bodyMedium)
 
-                Text(text = "Price: €$price", style = MaterialTheme.typography.bodyMedium)
+                Text(text = "Price: ₦$price", style = MaterialTheme.typography.bodyMedium)
             }
 
             Divider(
@@ -112,4 +116,3 @@ fun StudentSessionRequestCard(
         }
     }
 }
-*/

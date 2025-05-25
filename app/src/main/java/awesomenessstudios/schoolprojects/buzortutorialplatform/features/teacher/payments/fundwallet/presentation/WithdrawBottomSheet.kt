@@ -38,7 +38,7 @@ import awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun WithdrawBottomSheet(
-    title: String = "Fund Your Wallet",
+    title: String = "Top-up Your Wallet",
     wallet: Wallet,
     viewModel: WithdrawViewModel = hiltViewModel(),
     onClose: () -> Unit,
