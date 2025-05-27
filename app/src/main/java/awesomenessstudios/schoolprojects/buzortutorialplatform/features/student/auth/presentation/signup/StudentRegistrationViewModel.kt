@@ -1,6 +1,7 @@
 package awesomenessstudios.schoolprojects.buzortutorialplatform.features.student.auth.presentation.signup
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -80,7 +81,17 @@ class StudentRegistrationViewModel @Inject constructor(private val userPreferenc
                     val userId = mAuth.currentUser?.uid ?: ""
                     studentId = userId
                     _state.value = _state.value.copy(newUserId = userId)
-                    saveStudentDetails(userId, activity)
+                    val student = Student(
+                        id = userId,
+                        firstName = _state.value.firstName,
+                        lastName = _state.value.lastName,
+                        email = _state.value.email,
+                        phoneNumber = _state.value.phoneNumber,
+                        password = _state.value.password,
+                        grade = _state.value.grade
+                    )
+                    sendOtp(student.phoneNumber, activity, userId)
+
                 } else {
                     _state.value = _state.value.copy(
                         isLoading = false,
@@ -90,7 +101,7 @@ class StudentRegistrationViewModel @Inject constructor(private val userPreferenc
             }
     }
 
-    private fun saveStudentDetails(userId: String, activity: Activity) {
+    private fun saveStudentDetails(userId: String) {
         val student = Student(
             id = userId,
             firstName = _state.value.firstName,
@@ -108,7 +119,7 @@ class StudentRegistrationViewModel @Inject constructor(private val userPreferenc
                     isLoading = false,
 //                    isRegistrationSuccessful = true
                 )
-                sendOtp(student.phoneNumber, activity, userId)
+
             }
             .addOnFailureListener { e ->
                 _state.value = _state.value.copy(
@@ -127,7 +138,12 @@ class StudentRegistrationViewModel @Inject constructor(private val userPreferenc
             .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
                 override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                     // Auto-verification (e.g., SMS retriever)
-//                    signInWithPhoneAuthCredential(credential)
+                    val otp = credential.smsCode // Get the OTP from the credential
+                    Log.d("TAG", "onVerificationCompleted: ${credential.smsCode}")
+                    if (otp != null) {
+                        _state.value = _state.value.copy(otp = otp) // Directly set OTP for auto-verification
+                        verifyOtpWithCredential(credential, userId)
+                    }
                 }
 
                 override fun onVerificationFailed(e: FirebaseException) {
@@ -163,7 +179,9 @@ class StudentRegistrationViewModel @Inject constructor(private val userPreferenc
         _state.value = _state.value.copy(isLoading = true, errorMessage = null)
 
         val credential = PhoneAuthProvider.getCredential(verificationId!!, otp)
-        mAuth.signInWithCredential(credential)
+        saveStudentDetails(_state.value.newUserId)
+//        saveStudentDetails(_state.value.newUserId)
+      /*  mAuth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     updateVerificationStatus()
@@ -173,8 +191,14 @@ class StudentRegistrationViewModel @Inject constructor(private val userPreferenc
                         errorMessage = task.exception?.message ?: "OTP verification failed"
                     )
                 }
-            }
+            }*/
     }
+
+    private fun verifyOtpWithCredential(credential: PhoneAuthCredential, userId: String) {
+        saveStudentDetails(userId)
+
+    }
+
 
     private fun updateVerificationStatus() {
         val userId = _state.value.newUserId//mAuth.currentUser?.uid ?: return
