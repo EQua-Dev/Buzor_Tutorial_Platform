@@ -72,33 +72,9 @@ class StudentRegistrationViewModel @Inject constructor(private val userPreferenc
     private fun registerStudent(activity: Activity) {
         _state.value = _state.value.copy(isLoading = true, errorMessage = null)
 
-        val email = _state.value.email
-        val password = _state.value.password
+        sendOtp(_state.value.phoneNumber, activity)
 
-        mAuth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val userId = mAuth.currentUser?.uid ?: ""
-                    studentId = userId
-                    _state.value = _state.value.copy(newUserId = userId)
-                    val student = Student(
-                        id = userId,
-                        firstName = _state.value.firstName,
-                        lastName = _state.value.lastName,
-                        email = _state.value.email,
-                        phoneNumber = _state.value.phoneNumber,
-                        password = _state.value.password,
-                        grade = _state.value.grade
-                    )
-                    sendOtp(student.phoneNumber, activity, userId)
 
-                } else {
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        errorMessage = task.exception?.message ?: "Registration failed"
-                    )
-                }
-            }
     }
 
     private fun saveStudentDetails(userId: String) {
@@ -117,7 +93,7 @@ class StudentRegistrationViewModel @Inject constructor(private val userPreferenc
             .addOnSuccessListener {
                 _state.value = _state.value.copy(
                     isLoading = false,
-//                    isRegistrationSuccessful = true
+                    isRegistrationSuccessful = true
                 )
 
             }
@@ -130,7 +106,7 @@ class StudentRegistrationViewModel @Inject constructor(private val userPreferenc
     }
 
 
-    private fun sendOtp(phoneNumber: String, activity: Activity, userId: String) {
+    private fun sendOtp(phoneNumber: String, activity: Activity) {
         val options = PhoneAuthOptions.newBuilder(mAuth)
             .setPhoneNumber(phoneNumber)
             .setTimeout(60L, TimeUnit.SECONDS)
@@ -142,7 +118,8 @@ class StudentRegistrationViewModel @Inject constructor(private val userPreferenc
                     Log.d("TAG", "onVerificationCompleted: ${credential.smsCode}")
                     if (otp != null) {
                         _state.value = _state.value.copy(otp = otp) // Directly set OTP for auto-verification
-                        verifyOtpWithCredential(credential, userId)
+                        verifyOtp()
+//                        verifyOtpWithCredential(credential, userId)
                     }
                 }
 
@@ -176,22 +153,49 @@ class StudentRegistrationViewModel @Inject constructor(private val userPreferenc
             return
         }
 
+
+        val email = _state.value.email
+        val password = _state.value.password
         _state.value = _state.value.copy(isLoading = true, errorMessage = null)
 
         val credential = PhoneAuthProvider.getCredential(verificationId!!, otp)
-        saveStudentDetails(_state.value.newUserId)
-//        saveStudentDetails(_state.value.newUserId)
-      /*  mAuth.signInWithCredential(credential)
+
+        mAuth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    updateVerificationStatus()
+
+                    mAuth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                val userId = mAuth.currentUser?.uid ?: ""
+                                studentId = userId
+                                _state.value = _state.value.copy(newUserId = userId)
+                            /*    val student = Student(
+                                    id = userId,
+                                    firstName = _state.value.firstName,
+                                    lastName = _state.value.lastName,
+                                    email = _state.value.email,
+                                    phoneNumber = _state.value.phoneNumber,
+                                    password = _state.value.password,
+                                    grade = _state.value.grade
+                                )*/
+                                saveStudentDetails(_state.value.newUserId)
+                            } else {
+                                _state.value = _state.value.copy(
+                                    isLoading = false,
+                                    errorMessage = task.exception?.message ?: "Registration failed"
+                                )
+                            }
+                        }
+
+//                    updateVerificationStatus()
                 } else {
                     _state.value = _state.value.copy(
                         isLoading = false,
                         errorMessage = task.exception?.message ?: "OTP verification failed"
                     )
                 }
-            }*/
+            }
     }
 
     private fun verifyOtpWithCredential(credential: PhoneAuthCredential, userId: String) {
