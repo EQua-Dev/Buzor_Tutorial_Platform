@@ -18,6 +18,7 @@ interface WalletRepository {
         amount: Double,
         description: String,
         sender: String,
+
     ): Result<Unit>
 
     fun observeWalletHistory(walletId: String, onUpdate: (List<WalletHistory>) -> Unit)
@@ -26,8 +27,9 @@ interface WalletRepository {
         studentWalletId: String,
         teacherWalletId: String,
         sessionType: String,
-//        sessionId: String,
+        sessionId: String,
         courseId: String
     ): Result<Unit>
 
+    suspend fun releaseEscrowToTeacher(sessionId: String): Result<Unit>
 }

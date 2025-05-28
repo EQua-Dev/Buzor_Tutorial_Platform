@@ -13,6 +13,7 @@ import awesomenessstudios.schoolprojects.buzortutorialplatform.data.models.Singl
 import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.coursesrepo.CourseRepository
 import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.sessionrepo.SessionRepository
 import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.studentrepo.StudentRepository
+import awesomenessstudios.schoolprojects.buzortutorialplatform.repositories.walletrepo.WalletRepository
 import awesomenessstudios.schoolprojects.buzortutorialplatform.utils.HelpMe
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -23,7 +24,8 @@ import javax.inject.Inject
 class TeacherSessionViewModel @Inject constructor(
     private val repository: SessionRepository,
     private val studentRepository: StudentRepository,
-    private val courseRepository: CourseRepository
+    private val courseRepository: CourseRepository,
+    private val walletRepository: WalletRepository,
 ) : ViewModel()
 {
 
@@ -131,4 +133,11 @@ class TeacherSessionViewModel @Inject constructor(
             }
         )
     }
+
+    fun releaseEscrowToTeacher(sessionId: String){
+        viewModelScope.launch {
+            walletRepository.releaseEscrowToTeacher(sessionId)
+        }
+    }
+
 }

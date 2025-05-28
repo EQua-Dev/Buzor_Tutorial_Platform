@@ -143,6 +143,7 @@ class StudentCourseDetailViewModel @Inject constructor(
         amount: Double
     ) {
         try {
+            val sessionId = UUID.randomUUID().toString()
             // 1. Get current location for debit transaction
             val location = locationUtils.getCurrentLocation()
 
@@ -189,7 +190,7 @@ class StudentCourseDetailViewModel @Inject constructor(
                             teacherWalletId = teacherWallet.id,
                             sessionType = "Single",
                             courseId = courseId,
-//                            sessionId = sess
+                            sessionId = sessionId
                         ).getOrThrow()
                     }
                 }
@@ -204,6 +205,7 @@ class StudentCourseDetailViewModel @Inject constructor(
                 onSuccess = {
 
                     val singleSession = SingleSession(
+                        id = sessionId,
                         courseId = courseId,
                         teacherId = teacherId,
                         startTime = _newSessionData.value.startTime,
@@ -222,6 +224,7 @@ class StudentCourseDetailViewModel @Inject constructor(
                 },
                 onNoHardware = {
                     val singleSession = SingleSession(
+                        id = sessionId,
                         courseId = courseId,
                         teacherId = teacherId,
                         startTime = _newSessionData.value.startTime,

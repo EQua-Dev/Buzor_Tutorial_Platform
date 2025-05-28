@@ -83,6 +83,7 @@ fun UpcomingSessionsTab(
                 onClick = {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(session.sessionLink))
                     context.startActivity(intent)
+                    viewModel.releaseEscrowToTeacher(session.id)
 //                    onOpenSession(session.sessionLink, true)
 //                    sessionLink.value = session.sessionLink // 🔥 Save the link
 //                    showWebView.value = true // 🔥 Trigger WebView
@@ -106,6 +107,7 @@ fun UpcomingSessionsTab(
                 onClick = {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(session.sessionLink))
                     context.startActivity(intent)
+                    viewModel.releaseEscrowToTeacher(session.id)
 //                    onOpenSession(session.sessionLink, true)
 
                 },

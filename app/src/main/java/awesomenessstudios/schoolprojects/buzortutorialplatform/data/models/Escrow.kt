@@ -6,7 +6,7 @@ data class Escrow(
     val studentWallet: String = "",
     val teacherWallet: String = "",
     val sessionType: String = "",
-//    val sessionId: String = "",
+    val sessionId: String = "",
     val courseId: String = "",
     val dateCreated: String = ""
 )

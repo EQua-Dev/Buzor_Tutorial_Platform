@@ -137,7 +137,7 @@ class StudentSessionViewModel @Inject constructor(
                             teacherWalletId = teacherWallet.id,
                             sessionType = "Group",
                             courseId = courseId,
-//                            sessionId = sessionId
+                            sessionId = sessionId
                         ).getOrThrow()
                     }
                 }

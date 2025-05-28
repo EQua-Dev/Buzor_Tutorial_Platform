@@ -77,8 +77,7 @@ class WalletRepositoryImpl @Inject constructor(
         amount: Double,
         description: String,
         sender: String,
-
-        ): Result<Unit> {
+    ): Result<Unit> {
         return try {
             val walletDoc = firestore.collection(WALLETS_REF)
                 .whereEqualTo("ownerId", userId)
@@ -168,7 +167,7 @@ class WalletRepositoryImpl @Inject constructor(
         studentWalletId: String,
         teacherWalletId: String,
         sessionType: String,
-//        sessionId: String,
+        sessionId: String,
         courseId: String
     ): Result<Unit> {
         return try {
@@ -180,7 +179,7 @@ class WalletRepositoryImpl @Inject constructor(
                 studentWallet = studentWalletId,
                 teacherWallet = teacherWalletId,
                 sessionType = sessionType,
-//                sessionId = sessionId,
+                sessionId = sessionId,
                 courseId = courseId,
                 dateCreated = System.currentTimeMillis().toString()
             )
@@ -196,4 +195,81 @@ class WalletRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun releaseEscrowToTeacher(sessionId: String): Result<Unit> {
+        return try {
+            // Step 1: Query escrow by sessionId
+            val escrowQuery = firestore.collection(ESCROW_REF)
+                .whereEqualTo("sessionId", sessionId)
+                .get()
+                .await()
+
+            if (escrowQuery.isEmpty) {
+                return Result.failure(Exception("No escrow found for sessionId: $sessionId"))
+            }
+
+            val escrowDoc = escrowQuery.documents.first()
+            val escrow = escrowDoc.toObject(Escrow::class.java)
+                ?: return Result.failure(Exception("Failed to parse escrow document"))
+
+            // Step 2: Get wallet document using teacherWallet ID
+
+            val teacherIdResult = getWalletOwnerFromWalletId(escrow.teacherWallet)
+            val studentIdResult = getWalletOwnerFromWalletId(escrow.studentWallet)
+
+            if (teacherIdResult.isSuccess && studentIdResult.isSuccess) {
+                val teacherId = teacherIdResult.getOrNull()!!
+                val studentId = studentIdResult.getOrNull()!!
+
+                // Step 3: Credit the teacher's wallet
+                creditWallet(
+                    userId = teacherId,
+                    amount = escrow.amount.toDouble(),
+                    description = "Payment for ${escrow.sessionType} session $sessionId",
+                    sender = studentId
+                )
+
+
+                // Step 4: Optionally delete or update escrow as released
+                firestore.collection(ESCROW_REF)
+                    .document(escrow.id)
+                    .delete()
+                    .await()
+
+                return Result.success(Unit)
+//                return Result.success(Unit)
+            } else {
+                // Handle errors for both teacher and student wallet lookups
+                val exception =
+                    teacherIdResult.exceptionOrNull() ?: studentIdResult.exceptionOrNull()
+                return Result.failure(
+                    exception ?: Exception("Unknown error occurred while retrieving wallet owners")
+                )
+            }
+
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    private suspend fun getWalletOwnerFromWalletId(walletId: String): Result<String> {
+        return try {
+            val walletDoc = firestore.collection(WALLETS_REF)
+                .document(walletId)
+                .get()
+                .await()
+
+            if (!walletDoc.exists()) {
+                return Result.failure(Exception("Wallet not found: $walletId"))
+            }
+
+            val ownerId = walletDoc.getString("ownerId")
+                ?: return Result.failure(Exception("Owner ID not found in wallet: $walletId"))
+
+            Result.success(ownerId)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 }
+

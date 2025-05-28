@@ -139,7 +139,7 @@ fun SessionRequestCard(
                 Text(text = "Time: $time", style = MaterialTheme.typography.bodyMedium)
                 Text(text = "Course: $course", style = MaterialTheme.typography.bodyMedium)
                 Text(
-                    text = "Child Name: ${viewModel.state.student?.firstName} ${viewModel.state.student?.lastName}",
+                    text = "Student Name: ${viewModel.state.student?.firstName} ${viewModel.state.student?.lastName}",
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Text(text = "Price: ₦$price", style = MaterialTheme.typography.bodyMedium)
